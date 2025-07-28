@@ -22,13 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.demoniclarvatracker.attackstyles;
+package com.demoniclarvatracker;
 
 import lombok.Getter;
 import net.runelite.api.Skill;
 
-@Getter
-public enum AttackStyle
+enum AttackStyle
 {
 	ACCURATE("Accurate", Skill.ATTACK),
 	AGGRESSIVE("Aggressive", Skill.STRENGTH),
@@ -40,7 +39,9 @@ public enum AttackStyle
 	DEFENSIVE_CASTING("Defensive Casting", Skill.MAGIC, Skill.DEFENCE),
 	OTHER("Other");
 
+	@Getter
 	private final String name;
+	@Getter
 	private final Skill[] skills;
 
 	AttackStyle(final String name, final Skill... skills)

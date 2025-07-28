@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2025, marknewan <http://github.com/marknewan>
  * Copyright (c) 2023, Buchus <http://github.com/MoreBuchus>
+ * Copyright (c) 2017, honeyhoney <https://github.com/honeyhoney>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,8 +26,6 @@
  */
 package com.demoniclarvatracker;
 
-import com.demoniclarvatracker.attackstyles.AttackStyle;
-import com.demoniclarvatracker.attackstyles.WeaponType;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.Arrays;
@@ -43,11 +42,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.EnumID;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import net.runelite.api.ParamID;
 import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
+import net.runelite.api.StructComposition;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
@@ -56,7 +60,6 @@ import net.runelite.api.events.GraphicChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.StatChanged;
@@ -74,6 +77,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 
+@Slf4j
 @Singleton
 @PluginDescriptor(
 	name = "Demonic Larva Tracker",
@@ -101,30 +105,28 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
-	private final int[] previousSkillXp = new int[Skill.values().length];
-
-	private final Map<Skill, Integer> fakeXpDrops = new EnumMap<>(Skill.class);
-
 	@Getter(AccessLevel.PACKAGE)
 	private final Map<NPC, Larva> larvae = new HashMap<>();
 	@Getter(AccessLevel.PACKAGE)
 	private final Set<NPC> deadLarvae = new HashSet<>();
 
+	private final Map<Larva, Integer> larvaHitsplats = new HashMap<>();
+	private final Map<Skill, Integer> realXpDrops = new EnumMap<>(Skill.class);
+	private final Map<Skill, Integer> fakeXpDrops = new EnumMap<>(Skill.class);
+
+	private final int[] previousSkillXp = new int[Skill.values().length];
+
 	@Nullable
-	private NPC npc;
+	private NPC interactingNpc;
 	@Nullable
 	private AttackStyle attackStyle;
-
-	private int attackStyleVarbit = -1;
-	private int weaponTypeVarbit = -1;
-	private int castModeVarbit = -1;
 
 	private long lastTickNano;
 	private int lastTickMillis;
 
-	private boolean damageProcessed;
-
 	private boolean enabled;
+
+	private boolean debug;
 
 	@Override
 	protected void startUp()
@@ -157,23 +159,19 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		hooks.unregisterRenderableDrawListener(drawListener);
 
-		Arrays.fill(previousSkillXp, 0);
-
-		fakeXpDrops.clear();
 		larvae.clear();
 		deadLarvae.clear();
+		larvaHitsplats.clear();
+		realXpDrops.clear();
+		fakeXpDrops.clear();
 
-		npc = null;
+		Arrays.fill(previousSkillXp, 0);
+
+		interactingNpc = null;
 		attackStyle = null;
-
-		attackStyleVarbit = -1;
-		weaponTypeVarbit = -1;
-		castModeVarbit = -1;
 
 		lastTickNano = 0;
 		lastTickMillis = 0;
-
-		damageProcessed = false;
 	}
 
 	@Provides
@@ -214,49 +212,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onNpcSpawned(final NpcSpawned event)
-	{
-		if (!enabled)
-		{
-			return;
-		}
-
-		final var npc = event.getNpc();
-
-		if (isLarva(npc))
-		{
-			larvae.put(npc, new Larva(npc));
-			if (config.removeSpawnAnimation())
-			{
-				npc.clearSpotAnims();
-			}
-		}
-	}
-
-	@Subscribe
-	public void onNpcDespawned(final NpcDespawned event)
-	{
-		if (!enabled)
-		{
-			return;
-		}
-
-		final var npc = event.getNpc();
-		final int id = npc.getId();
-
-		if (isLarva(npc))
-		{
-			larvae.remove(npc);
-			deadLarvae.remove(npc);
-		}
-		else if (id >= NpcID.DOM_BOSS && id <= NpcID.DOM_BOSS_BURROWED)
-		{
-			larvae.clear();
-			deadLarvae.clear();
-		}
-	}
-
-	@Subscribe
 	public void onGraphicChanged(final GraphicChanged event)
 	{
 		if (!enabled || !config.removeSpawnAnimation())
@@ -280,6 +235,58 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onNpcSpawned(final NpcSpawned event)
+	{
+		if (!enabled)
+		{
+			return;
+		}
+
+		final var npc = event.getNpc();
+
+		if (isLarva(npc))
+		{
+			larvae.put(npc, new Larva(npc));
+			if (config.removeSpawnAnimation())
+			{
+				npc.clearSpotAnims();
+			}
+
+			if (debug)
+			{
+				log.info("{} - onNpcSpawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
+			}
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(final NpcDespawned event)
+	{
+		if (!enabled)
+		{
+			return;
+		}
+
+		final var npc = event.getNpc();
+		final int id = npc.getId();
+
+		if (isLarva(npc))
+		{
+			larvae.remove(npc);
+			deadLarvae.remove(npc);
+			if (debug)
+			{
+				log.info("{} - onNpcDespawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
+			}
+		}
+		else if (id >= NpcID.DOM_BOSS && id <= NpcID.DOM_BOSS_BURROWED)
+		{
+			larvae.clear();
+			deadLarvae.clear();
+		}
+	}
+
+	@Subscribe
 	public void onActorDeath(final ActorDeath event)
 	{
 		if (!enabled)
@@ -294,14 +301,23 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		}
 
 		final var npc = (NPC) actor;
-		if (isLarva(npc))
+
+		final var larva = larvae.get(npc);
+		if (larva == null)
 		{
-			larvae.remove(npc);
-			deadLarvae.remove(npc);
+			return;
+		}
+
+		larva.kill(client.getTickCount());
+		deadLarvae.add(npc);
+
+		if (debug)
+		{
+			log.info("{} - onActorDeath: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 		}
 	}
 
-	@Subscribe
+	@Subscribe()
 	private void onInteractingChanged(final InteractingChanged event)
 	{
 		if (!enabled || event.getSource() != client.getLocalPlayer())
@@ -309,7 +325,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		npc = null;
+		interactingNpc = null;
 
 		final var actor = event.getTarget();
 		if (!(actor instanceof NPC))
@@ -323,7 +339,12 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		this.npc = npc;
+		this.interactingNpc = npc;
+
+		if (debug)
+		{
+			log.info("{} - onInteractingChanged: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
+		}
 	}
 
 	@Subscribe
@@ -335,6 +356,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		}
 
 		final var skill = event.getSkill();
+		final var xp = event.getXp();
 
 		switch (skill)
 		{
@@ -343,7 +365,11 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case DEFENCE:
 			case RANGED:
 			case HITPOINTS:
-				fakeXpDrops.merge(skill, event.getXp(), Integer::sum);
+				fakeXpDrops.merge(skill, xp, Integer::sum);
+				if (debug)
+				{
+					log.info("{} - onFakeXpDrop: {} {}", client.getTickCount(), skill, xp);
+				}
 				break;
 			default:
 				break;
@@ -358,38 +384,39 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		final int idx = event.getSkill().ordinal();
-		final int previousXp = previousSkillXp[idx];
-		final int currentXp = event.getXp();
-		previousSkillXp[idx] = currentXp;
+		final var skill = event.getSkill();
+		final var xp = event.getXp();
 
-		if (previousXp <= 0)
+		final int idx = skill.ordinal();
+		final int prevXp = previousSkillXp[idx];
+		previousSkillXp[idx] = xp;
+		if (prevXp == 0)
 		{
 			return;
 		}
 
-		if (npc == null)
-		{
-			final var actor = client.getLocalPlayer().getInteracting();
-			if (!(actor instanceof NPC))
-			{
-				return;
-			}
-			final var npc = (NPC) actor;
-			if (!isLarva(npc))
-			{
-				return;
-			}
-			this.npc = npc;
-		}
-
-		final int xp = currentXp - previousXp;
-		if (xp <= 0)
+		final int xpDiff = xp - prevXp;
+		if (xpDiff <= 0)
 		{
 			return;
 		}
 
-		processXp(event.getSkill(), xp);
+		switch (skill)
+		{
+			case ATTACK:
+			case STRENGTH:
+			case DEFENCE:
+			case RANGED:
+			case HITPOINTS:
+				realXpDrops.merge(skill, xpDiff, Integer::sum);
+				if (debug)
+				{
+					log.info("{} - onStatChanged: {} {}", client.getTickCount(), skill, xpDiff);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Subscribe
@@ -420,22 +447,11 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		larva.onHitsplat(damage);
+		larvaHitsplats.put(larva, damage);
 
-		if (larva.isDead())
+		if (debug)
 		{
-			larva.setDeathTick(client.getTickCount());
-			deadLarvae.add(npc);
-		}
-		else if (larva.willDie())
-		{
-			larva.kill(client.getTickCount());
-			deadLarvae.add(npc);
-		}
-		else
-		{
-			larva.setDeathTick(0);
-			deadLarvae.remove(npc);
+			log.info("{} - onHitsplatApplied: {} ({}) damage={}", client.getTickCount(), npc.getName(), npc.getIndex(), damage);
 		}
 	}
 
@@ -479,46 +495,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(final MenuOptionClicked event)
-	{
-		if (!enabled)
-		{
-			return;
-		}
-
-		switch (event.getMenuAction())
-		{
-			case WIDGET_TARGET_ON_NPC:
-			case NPC_FIRST_OPTION:
-			case NPC_SECOND_OPTION:
-			case NPC_THIRD_OPTION:
-			case NPC_FOURTH_OPTION:
-			case NPC_FIFTH_OPTION:
-				final var npc = event.getMenuEntry().getNpc();
-				this.npc = isLarva(npc) ? npc : null;
-				initAttackStyles();
-				break;
-			case WALK:
-			case WIDGET_TARGET_ON_WIDGET:
-			case WIDGET_TARGET_ON_GROUND_ITEM:
-			case WIDGET_TARGET_ON_PLAYER:
-			case GROUND_ITEM_FIRST_OPTION:
-			case GROUND_ITEM_SECOND_OPTION:
-			case GROUND_ITEM_THIRD_OPTION:
-			case GROUND_ITEM_FOURTH_OPTION:
-			case GROUND_ITEM_FIFTH_OPTION:
-				this.npc = null;
-				break;
-			default:
-				if (event.isItemOp())
-				{
-					this.npc = null;
-				}
-				break;
-		}
-	}
-
-	@Subscribe
 	private void onVarbitChanged(final VarbitChanged event)
 	{
 		if (!enabled)
@@ -526,44 +502,38 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		final int id = event.getVarbitId();
-
-		switch (id)
+		if (event.getVarpId() == VarPlayerID.COM_MODE ||
+			event.getVarbitId() == VarbitID.COMBAT_WEAPON_CATEGORY ||
+			event.getVarbitId() == VarbitID.AUTOCAST_DEFMODE)
 		{
-			case VarPlayerID.COM_MODE:
-				attackStyleVarbit = event.getValue();
-				weaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
-				castModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
-				break;
-			case VarbitID.COMBAT_WEAPON_CATEGORY:
-				weaponTypeVarbit = event.getValue();
-				attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
-				castModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
-				break;
-			case VarbitID.AUTOCAST_DEFMODE:
-				castModeVarbit = event.getValue();
-				attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
-				weaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
-				break;
-			default:
-				return;
+			initAttackStyles();
 		}
-
-		updateAttackStyle(attackStyleVarbit, weaponTypeVarbit, castModeVarbit);
 	}
 
 	@Subscribe
 	public void onGameTick(final GameTick event)
 	{
-		if (!enabled)
+		if (!enabled || processLag())
 		{
 			return;
 		}
 
-		damageProcessed = false;
-		processLag();
-		processFakeXpDrops();
-		processLarvas();
+		larvae.values().forEach(larva -> larva.setProcessed(false));
+
+		processHitSplats();
+
+		processXpDrops(realXpDrops);
+		realXpDrops.clear();
+
+		processXpDrops(fakeXpDrops);
+		fakeXpDrops.clear();
+
+		processLarvae();
+
+		if (debug)
+		{
+			log.info("---- END GAME TICK {} ----", client.getTickCount());
+		}
 	}
 
 	private boolean inRegion()
@@ -599,35 +569,174 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		return true;
 	}
 
-	private void processLag()
+	private boolean processLag()
 	{
+		if (lastTickNano == 0)
+		{
+			lastTickNano = System.nanoTime();
+			return false;
+		}
+
 		final long time = System.nanoTime();
 		lastTickMillis = (int) ((time - lastTickNano) / 1_000_000L);
 		lastTickNano = time;
 
 		if (lastTickMillis < config.lagProtectionThreshold())
 		{
+			return false;
+		}
+
+		if (config.printLagMessages())
+		{
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "DemonicLarvaTracker",
+				String.format("[DemonicLarvaTracker] Warning: lagged for %d ms on gameTick %d.", lastTickMillis, client.getTickCount()), null);
+		}
+
+		larvae.values().forEach(Larva::revive);
+		deadLarvae.clear();
+		larvaHitsplats.clear();
+		realXpDrops.clear();
+		fakeXpDrops.clear();
+
+		return true;
+	}
+
+	private void processHitSplats()
+	{
+		if (larvaHitsplats.isEmpty())
+		{
 			return;
 		}
 
-		if (!larvae.isEmpty())
+		larvaHitsplats.keySet().removeIf(l -> !larvae.containsValue(l));
+
+		for (final var entry : larvaHitsplats.entrySet())
 		{
-			larvae.values().forEach(Larva::revive);
+			final var larva = entry.getKey();
+			final int damage = entry.getValue();
+			final var npc = larva.getNpc();
+
+			if (larva.isDead())
+			{
+				larva.setDeathTick(client.getTickCount());
+				deadLarvae.add(npc);
+				if (debug)
+				{
+					log.info("{} - processHitSplats (already dead): {} ({}) isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
+				}
+				continue;
+			}
+
+			larva.applyDamage(damage);
+
+			if (larva.isDead())
+			{
+				larva.kill(client.getTickCount());
+				deadLarvae.add(npc);
+				if (debug)
+				{
+					log.info("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
+				}
+				return;
+			}
+
+			larva.setDeathTick(0);
+			deadLarvae.remove(npc);
+			if (debug)
+			{
+				log.info("{} - processHitSplats (alive): {} ({}) damage={} isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
+			}
 		}
 
-		if (!deadLarvae.isEmpty())
-		{
-			deadLarvae.clear();
-		}
+		larvaHitsplats.clear();
 	}
 
-	private void processFakeXpDrops()
+	private void processXpDrops(final Map<Skill, Integer> xpDrops)
 	{
-		fakeXpDrops.forEach(this::processXp);
-		fakeXpDrops.clear();
+		if (xpDrops.isEmpty())
+		{
+			return;
+		}
+
+		if (interactingNpc == null || attackStyle == null)
+		{
+			xpDrops.clear();
+			if (debug)
+			{
+				log.info("{} - processXpDrops (skipping): interactingNpc={} attackStyle={}",
+					client.getTickCount(), interactingNpc, attackStyle);
+			}
+			return;
+		}
+
+		final var larva = larvae.get(interactingNpc);
+		if (larva == null || larva.isDead() || larva.isProcessed())
+		{
+			xpDrops.clear();
+			if (debug)
+			{
+				log.info("{} - processXpDrops (skipping): larva null/dead/processed", client.getTickCount());
+			}
+			return;
+		}
+
+		final var npc = larva.getNpc();
+
+		for (final var entry : xpDrops.entrySet())
+		{
+			var skill = entry.getKey();
+			final var xp = entry.getValue();
+
+			if (skill == Skill.ATTACK || skill == Skill.STRENGTH || skill == Skill.DEFENCE || skill == Skill.RANGED)
+			{
+				if (attackStyle == AttackStyle.LONGRANGE)
+				{
+					skill = Skill.RANGED;
+				}
+			}
+			else if (skill == Skill.HITPOINTS && attackStyle != AttackStyle.CASTING)
+			{
+				if (debug)
+				{
+					log.info("{} - processXpDrops (skipping): skill={} attackStyle={} != CASTING", client.getTickCount(), skill, attackStyle);
+				}
+				continue;
+			}
+
+			final int damage = calcDamageFromXpDrop(skill, xp);
+
+			larva.applyDamage(damage);
+			larva.setProcessed(true);
+
+			if (larva.isDead())
+			{
+				larva.kill(client.getTickCount());
+				deadLarvae.add(npc);
+				if (debug)
+				{
+					log.info("{} - processXpDrops (killed): {} ({}) damage={} isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
+				}
+			}
+			else
+			{
+				larva.setDeathTick(0);
+				deadLarvae.remove(interactingNpc);
+				if (debug)
+				{
+					log.info("{} - processXpDrops (alive): {} ({}) damage={} isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
+				}
+			}
+		}
+
+		xpDrops.clear();
 	}
 
-	private void processLarvas()
+	private void processLarvae()
 	{
 		if (larvae.isEmpty())
 		{
@@ -639,112 +748,114 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			final var npc = entry.getKey();
 			final var larva = entry.getValue();
 
-			final boolean notActuallyDead = larva.isDead() && larva.isExpired(client.getTickCount()) && !npcUtil.isDying(npc);
-
-			if (notActuallyDead)
+			if (npcUtil.isDying(npc))
+			{
+				larva.kill(client.getTickCount());
+				deadLarvae.add(npc);
+				if (debug)
+				{
+					log.info("{} - processLarvae (dying): {} ({}) isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
+				}
+			}
+			else if (larva.isDead() && larva.isExpired(client.getTickCount()))
 			{
 				larva.revive();
 				deadLarvae.remove(npc);
-				continue;
-			}
-
-			final boolean dying = larva.getHp() > 0 && npcUtil.isDying(npc);
-			if (dying)
-			{
-				larva.kill(client.getTickCount());
-				deadLarvae.add(npc);
-			}
-		}
-	}
-
-	private void processXp(Skill skill, final int xp)
-	{
-		switch (skill)
-		{
-			case ATTACK:
-			case STRENGTH:
-			case DEFENCE:
-			case RANGED:
-				if (attackStyle == AttackStyle.LONGRANGE)
+				if (debug)
 				{
-					skill = Skill.RANGED;
+					log.info("{} - processLarvae (revive): {} ({}) isDead={} deathTick={}",
+						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
 				}
-				break;
-			case HITPOINTS:
-				if (attackStyle != AttackStyle.CASTING)
-				{
-					return;
-				}
-				break;
-			default:
-				return;
+			}
 		}
-
-		final int damage = calcDamage(skill, attackStyle, xp);
-		processDamage(damage, skill);
-	}
-
-	private void processDamage(final int damage, final Skill skill)
-	{
-		if (damage <= 0 || skill == null || damageProcessed || npc == null)
-		{
-			return;
-		}
-
-		damageProcessed = true;
-
-		clientThread.invokeLater(() -> {
-			final var larva = larvae.get(npc);
-			if (larva == null)
-			{
-				return;
-			}
-
-			larva.queueDamage(damage);
-
-			if (larva.willDie())
-			{
-				larva.kill(client.getTickCount());
-				deadLarvae.add(npc);
-			}
-			else
-			{
-				larva.setDeathTick(0);
-				deadLarvae.remove(npc);
-			}
-		});
 	}
 
 	private void initAttackStyles()
 	{
-		attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
-		weaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
-		castModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
-		updateAttackStyle(attackStyleVarbit, weaponTypeVarbit, castModeVarbit);
+		final int equippedWeaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
+		final int attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
+		final int castingModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
+
+		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
 	}
 
-	private void updateAttackStyle(int attackStyleVarbit, final int weaponTypeVarbit, final int castModeVarbit)
+	private void updateAttackStyle(final int equippedWeaponType, int attackStyleIndex, final int castingMode)
 	{
-		if (attackStyleVarbit == 4)
+		final AttackStyle[] attackStyles = getWeaponTypeStyles(equippedWeaponType);
+		if (attackStyleIndex < attackStyles.length)
 		{
-			attackStyleVarbit += castModeVarbit;
-		}
+			if (attackStyleIndex == 4)
+			{
+				attackStyleIndex += castingMode;
+			}
 
-		final var attackStyles = WeaponType.byTypeId(weaponTypeVarbit).getAttackStyles();
-		if (attackStyleVarbit >= attackStyles.length)
+			attackStyle = attackStyles[attackStyleIndex];
+			if (attackStyle == null)
+			{
+				attackStyle = AttackStyle.OTHER;
+			}
+
+			if (debug)
+			{
+				log.info("{} - updateAttackStyle: attackStyle={}", client.getTickCount(), attackStyle);
+			}
+		}
+	}
+
+	private AttackStyle[] getWeaponTypeStyles(final int weaponType)
+	{
+		final int weaponStyleEnum = client.getEnum(EnumID.WEAPON_STYLES).getIntValue(weaponType);
+		if (weaponStyleEnum == -1)
 		{
-			return;
-		}
+			if (weaponType == 22)
+			{
+				return new AttackStyle[]{
+					AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, null, AttackStyle.DEFENSIVE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING
+				};
+			}
 
-		attackStyle = attackStyles[attackStyleVarbit];
+			if (weaponType == 30)
+			{
+				return new AttackStyle[]{
+					AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.AGGRESSIVE, AttackStyle.DEFENSIVE
+				};
+			}
+			return new AttackStyle[0];
+		}
+		final int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
+
+		final AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
+		int i = 0;
+		for (final int style : weaponStyleStructs)
+		{
+			final StructComposition attackStyleStruct = client.getStructComposition(style);
+			final String attackStyleName = attackStyleStruct.getStringValue(ParamID.ATTACK_STYLE_NAME);
+
+			AttackStyle attackStyle = AttackStyle.valueOf(attackStyleName.toUpperCase());
+			if (attackStyle == AttackStyle.OTHER)
+			{
+				++i;
+				continue;
+			}
+
+			if (i == 5 && attackStyle == AttackStyle.DEFENSIVE)
+			{
+				attackStyle = AttackStyle.DEFENSIVE_CASTING;
+			}
+
+			styles[i++] = attackStyle;
+		}
+		return styles;
+	}
+
+	private int calcDamageFromXpDrop(final Skill skill, final int xp)
+	{
 		if (attackStyle == null)
 		{
-			attackStyle = AttackStyle.OTHER;
+			return 0;
 		}
-	}
 
-	private static int calcDamage(final Skill skill, final AttackStyle attackStyle, final int xp)
-	{
 		double damage = 0;
 
 		switch (skill)
@@ -822,43 +933,34 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		private int deathTick;
 
 		private int hp = MAX_HP;
-		private int queuedDamage;
 
-		private boolean dead;
+		private boolean processed;
 
 		private Larva(final @NonNull NPC npc)
 		{
 			this.npc = npc;
 		}
 
-		private void onHitsplat(final int amount)
+		private void applyDamage(final int amount)
 		{
 			hp = Math.max(0, hp - amount);
-			queuedDamage = Math.max(0, queuedDamage - amount);
 		}
 
-		private void queueDamage(final int amount)
+		private boolean isDead()
 		{
-			queuedDamage += amount;
-		}
-
-		private boolean willDie()
-		{
-			return hp == 0 || queuedDamage >= hp;
+			return hp == 0;
 		}
 
 		private void kill(final int tick)
 		{
 			hp = 0;
 			deathTick = tick;
-			dead = true;
 		}
 
 		private void revive()
 		{
 			hp = MAX_HP;
 			deathTick = 0;
-			dead = false;
 		}
 
 		private boolean isExpired(final int tick)
@@ -869,8 +971,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		@Override
 		public String toString()
 		{
-			return String.format("[name=%s hp=%d deathTick=%d queuedDamage=%d isDead=%s]",
-				npc.getName(), hp, deathTick, queuedDamage, dead);
+			return String.format("[name=%s hp=%d deathTick=%d isDead=%s]", npc.getName(), hp, deathTick, isDead());
 		}
 	}
 }

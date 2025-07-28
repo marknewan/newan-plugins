@@ -69,10 +69,23 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
+		name = "Print Lag Messages",
+		description = "Print to chat when a lag spike is encountered." +
+			"<br>Increase the lag protection if you see these messages a lot.",
+		position = 2,
+		keyName = "printLagMessages",
+		section = SECTION_GENERAL
+	)
+	default boolean printLagMessages()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		name = "Hide Larva Overheads",
 		description = "Hide larva overheads." +
 			"<br>Only applies to range, melee, and magic larvae.",
-		position = 2,
+		position = 3,
 		keyName = "hideLarvaOverheads",
 		section = SECTION_GENERAL
 	)
@@ -84,7 +97,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Recolor Larva Menu Entries",
 		description = "Recolor menu entries for larva npcs.",
-		position = 3,
+		position = 4,
 		keyName = "recolorLarvaMenuEntries",
 		section = SECTION_GENERAL
 	)
@@ -96,7 +109,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Remove spawn animation",
 		description = "Remove the spawn animation from larvas.",
-		position = 4,
+		position = 5,
 		keyName = "removeSpawnAnimation",
 		section = SECTION_GENERAL
 	)
