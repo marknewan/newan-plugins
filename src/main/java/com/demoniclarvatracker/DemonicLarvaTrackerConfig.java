@@ -250,6 +250,20 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return false;
 	}
 
+	// Highlight Minimap
+
+	@ConfigItem(
+		name = "Highlight Minimap",
+		description = "Highlight minimap location of larva npcs.",
+		position = 10,
+		keyName = "highlightMinimap",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean highlightMinimap()
+	{
+		return false;
+	}
+
 	// Colors
 
 	// Demonic Larva
@@ -319,7 +333,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.WHITE, 16);
 	}
 
-	@Alpha
 	@ConfigItem(
 		name = "Base Menu",
 		description = "Demonic larva menu color.",
@@ -399,7 +412,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.RED, 16);
 	}
 
-	@Alpha
 	@ConfigItem(
 		name = "Melee Menu",
 		description = "Demonic melee larva menu color.",
@@ -479,7 +491,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.GREEN, 16);
 	}
 
-	@Alpha
 	@ConfigItem(
 		name = "Range Menu",
 		description = "Demonic range larva menu color.",
@@ -559,7 +570,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.BLUE, 16);
 	}
 
-	@Alpha
 	@ConfigItem(
 		name = "Magic Menu",
 		description = "Demonic magic larva menu color.",

@@ -102,6 +102,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private OverlayManager overlayManager;
 	@Inject
 	private SceneOverlay sceneOverlay;
+	@Inject
+	private WidgetOverlay widgetOverlay;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -146,7 +148,9 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		enabled = true;
 
 		hooks.registerRenderableDrawListener(drawListener);
+
 		overlayManager.add(sceneOverlay);
+		overlayManager.add(widgetOverlay);
 
 		initAttackStyles();
 		System.arraycopy(client.getSkillExperiences(), 0, previousSkillXp, 0, previousSkillXp.length);
@@ -158,6 +162,9 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		enabled = false;
 
 		hooks.unregisterRenderableDrawListener(drawListener);
+
+		overlayManager.remove(sceneOverlay);
+		overlayManager.remove(widgetOverlay);
 
 		larvae.clear();
 		deadLarvae.clear();
