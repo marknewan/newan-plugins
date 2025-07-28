@@ -107,7 +107,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Remove spawn animation",
+		name = "Remove Spawn Animation",
 		description = "Remove the spawn animation from larvas.",
 		position = 5,
 		keyName = "removeSpawnAnimation",
