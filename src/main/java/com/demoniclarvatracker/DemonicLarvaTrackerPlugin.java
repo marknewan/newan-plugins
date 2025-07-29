@@ -215,6 +215,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 					shutDown();
 				}
 				break;
+			default:
+				break;
 		}
 	}
 
@@ -251,18 +253,20 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		final var npc = event.getNpc();
 
-		if (isLarva(npc))
+		if (!isLarva(npc))
 		{
-			larvae.put(npc, new Larva(npc));
-			if (config.removeSpawnAnimation())
-			{
-				npc.clearSpotAnims();
-			}
+			return;
+		}
 
-			if (debug)
-			{
-				log.info("{} - onNpcSpawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
-			}
+		larvae.put(npc, new Larva(npc));
+		if (config.removeSpawnAnimation())
+		{
+			npc.clearSpotAnims();
+		}
+
+		if (debug)
+		{
+			log.info("{} - onNpcSpawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 		}
 	}
 
@@ -281,6 +285,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		{
 			larvae.remove(npc);
 			deadLarvae.remove(npc);
+
 			if (debug)
 			{
 				log.info("{} - onNpcDespawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
@@ -528,6 +533,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		larvae.values().forEach(larva -> larva.setProcessed(false));
 
 		processHitSplats();
+		larvaHitsplats.clear();
 
 		processXpDrops(realXpDrops);
 		realXpDrops.clear();
@@ -627,6 +633,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.setDeathTick(client.getTickCount());
 				deadLarvae.add(npc);
+
 				if (debug)
 				{
 					log.info("{} - processHitSplats (already dead): {} ({}) isDead={} deathTick={}",
@@ -641,6 +648,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
+
 				if (debug)
 				{
 					log.info("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
@@ -651,14 +659,13 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 			larva.setDeathTick(0);
 			deadLarvae.remove(npc);
+
 			if (debug)
 			{
 				log.info("{} - processHitSplats (alive): {} ({}) damage={} isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 			}
 		}
-
-		larvaHitsplats.clear();
 	}
 
 	private void processXpDrops(final Map<Skill, Integer> xpDrops)
@@ -670,7 +677,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		if (interactingNpc == null || attackStyle == null)
 		{
-			xpDrops.clear();
 			if (debug)
 			{
 				log.info("{} - processXpDrops (skipping): interactingNpc={} attackStyle={}",
@@ -682,7 +688,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		final var larva = larvae.get(interactingNpc);
 		if (larva == null || larva.isDead() || larva.isProcessed())
 		{
-			xpDrops.clear();
 			if (debug)
 			{
 				log.info("{} - processXpDrops (skipping): larva null/dead/processed", client.getTickCount());
@@ -722,6 +727,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
+
 				if (debug)
 				{
 					log.info("{} - processXpDrops (killed): {} ({}) damage={} isDead={} deathTick={}",
@@ -732,6 +738,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.setDeathTick(0);
 				deadLarvae.remove(interactingNpc);
+
 				if (debug)
 				{
 					log.info("{} - processXpDrops (alive): {} ({}) damage={} isDead={} deathTick={}",
@@ -739,8 +746,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				}
 			}
 		}
-
-		xpDrops.clear();
 	}
 
 	private void processLarvae()
@@ -759,6 +764,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
+
 				if (debug)
 				{
 					log.info("{} - processLarvae (dying): {} ({}) isDead={} deathTick={}",
@@ -769,6 +775,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			{
 				larva.revive();
 				deadLarvae.remove(npc);
+
 				if (debug)
 				{
 					log.info("{} - processLarvae (revive): {} ({}) isDead={} deathTick={}",
@@ -891,7 +898,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				if (attackStyle == AttackStyle.CASTING)
 				{
 					damage = xp / 1.33D;
-					break;
 				}
 				break;
 			case RANGED:
