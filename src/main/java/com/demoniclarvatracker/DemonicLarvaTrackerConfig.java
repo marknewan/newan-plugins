@@ -250,12 +250,51 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return false;
 	}
 
+	// Highlight Clickbox
+
+	@ConfigItem(
+		name = "Highlight Clickbox Outline",
+		description = "Highlight clickbox outline of larva npcs.",
+		position = 10,
+		keyName = "highlightClickBoxOutline",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean highlightClickBoxOutline()
+	{
+		return false;
+	}
+
+	@Range(max = 50)
+	@ConfigItem(
+		name = "Width",
+		description = "Width of highlight clickbox outline.",
+		position = 11,
+		keyName = "highlightClickBoxWidth",
+		section = SECTION_HIGHLIGHTS
+	)
+	default double highlightClickBoxWidth()
+	{
+		return 1;
+	}
+
+	@ConfigItem(
+		name = "Highlight Clickbox Fill",
+		description = "Highlight clickbox fill of larva npcs.",
+		position = 12,
+		keyName = "highlightClickBoxFill",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean highlightClickBoxFill()
+	{
+		return false;
+	}
+
 	// Highlight Minimap
 
 	@ConfigItem(
 		name = "Highlight Minimap",
 		description = "Highlight minimap location of larva npcs.",
-		position = 10,
+		position = 13,
 		keyName = "highlightMinimap",
 		section = SECTION_HIGHLIGHTS
 	)
@@ -268,7 +307,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		name = "Anti-aliasing",
 		description = "Smooths out edges of outlines." +
 			"<br>Reduces 'jagged' or 'stair-step' appearance that can occur.",
-		position = 11,
+		position = 14,
 		keyName = "antiAliasing",
 		section = SECTION_HIGHLIGHTS
 	)
@@ -346,10 +385,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.WHITE, 16);
 	}
 
+	@Alpha
+	@ConfigItem(
+		name = "Base Clickbox Outline",
+		description = "Demonic larva clickbox outline color.",
+		position = 5,
+		keyName = "colorClickBoxOutlineBase",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxOutlineBase()
+	{
+		return Color.WHITE;
+	}
+
+	@Alpha
+	@ConfigItem(
+		name = "Base Clickbox Fill",
+		description = "Demonic larva clickbox fill color.",
+		position = 6,
+		keyName = "colorClickBoxFillBase",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxFillBase()
+	{
+		return ColorUtil.colorWithAlpha(Color.WHITE, 16);
+	}
+
 	@ConfigItem(
 		name = "Base Menu",
 		description = "Demonic larva menu color.",
-		position = 5,
+		position = 7,
 		keyName = "colorMenuBase",
 		section = SECTION_COLORS
 	)
@@ -364,7 +429,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Melee Outline",
 		description = "Demonic melee larva outline color.",
-		position = 6,
+		position = 8,
 		keyName = "colorOutlineMelee",
 		section = SECTION_COLORS
 	)
@@ -377,7 +442,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Melee Tile Outline",
 		description = "Demonic melee larva tile outline color.",
-		position = 7,
+		position = 9,
 		keyName = "colorTileOutlineMelee",
 		section = SECTION_COLORS
 	)
@@ -390,7 +455,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Melee Tile Fill",
 		description = "Demonic melee larva tile fill color.",
-		position = 8,
+		position = 10,
 		keyName = "colorTileFillMelee",
 		section = SECTION_COLORS
 	)
@@ -403,7 +468,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Melee Hull Outline",
 		description = "Demonic melee larva hull outline color.",
-		position = 9,
+		position = 11,
 		keyName = "colorHullOutlineMelee",
 		section = SECTION_COLORS
 	)
@@ -416,7 +481,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Melee Hull Fill",
 		description = "Demonic melee larva hull fill color.",
-		position = 10,
+		position = 12,
 		keyName = "colorHullFillMelee",
 		section = SECTION_COLORS
 	)
@@ -425,10 +490,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.RED, 16);
 	}
 
+	@Alpha
+	@ConfigItem(
+		name = "Melee Clickbox Outline",
+		description = "Demonic melee larva clickbox outline color.",
+		position = 13,
+		keyName = "colorClickBoxOutlineMelee",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxOutlineMelee()
+	{
+		return Color.RED;
+	}
+
+	@Alpha
+	@ConfigItem(
+		name = "Melee Clickbox Fill",
+		description = "Demonic melee larva clickbox fill color.",
+		position = 14,
+		keyName = "colorClickBoxFillMelee",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxFillMelee()
+	{
+		return ColorUtil.colorWithAlpha(Color.RED, 16);
+	}
+
 	@ConfigItem(
 		name = "Melee Menu",
 		description = "Demonic melee larva menu color.",
-		position = 11,
+		position = 15,
 		keyName = "colorMenuMelee",
 		section = SECTION_COLORS
 	)
@@ -443,7 +534,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Range Outline",
 		description = "Demonic range larva outline color.",
-		position = 12,
+		position = 16,
 		keyName = "colorOutlineRange",
 		section = SECTION_COLORS
 	)
@@ -456,7 +547,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Range Tile Outline",
 		description = "Demonic range larva tile outline color.",
-		position = 13,
+		position = 17,
 		keyName = "colorTileOutlineRange",
 		section = SECTION_COLORS
 	)
@@ -469,7 +560,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Range Tile Fill",
 		description = "Demonic range larva tile fill color.",
-		position = 14,
+		position = 18,
 		keyName = "colorTileFillRange",
 		section = SECTION_COLORS
 	)
@@ -482,7 +573,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Range Hull Outline",
 		description = "Demonic range larva hull outline color.",
-		position = 15,
+		position = 19,
 		keyName = "colorHullOutlineRange",
 		section = SECTION_COLORS
 	)
@@ -495,7 +586,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Range Hull Fill",
 		description = "Demonic range larva hull fill color.",
-		position = 16,
+		position = 20,
 		keyName = "colorHullFillRange",
 		section = SECTION_COLORS
 	)
@@ -504,10 +595,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.GREEN, 16);
 	}
 
+	@Alpha
+	@ConfigItem(
+		name = "Range Clickbox Outline",
+		description = "Demonic range larva clickbox outline color.",
+		position = 21,
+		keyName = "colorClickBoxOutlineRange",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxOutlineRange()
+	{
+		return Color.GREEN;
+	}
+
+	@Alpha
+	@ConfigItem(
+		name = "Range Clickbox Fill",
+		description = "Demonic range larva clickbox fill color.",
+		position = 22,
+		keyName = "colorClickBoxFillRange",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxFillRange()
+	{
+		return ColorUtil.colorWithAlpha(Color.GREEN, 16);
+	}
+
 	@ConfigItem(
 		name = "Range Menu",
 		description = "Demonic range larva menu color.",
-		position = 17,
+		position = 23,
 		keyName = "colorMenuRange",
 		section = SECTION_COLORS
 	)
@@ -522,7 +639,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Magic Outline",
 		description = "Demonic magic larva outline color.",
-		position = 18,
+		position = 24,
 		keyName = "colorOutlineMagic",
 		section = SECTION_COLORS
 	)
@@ -535,7 +652,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Magic Tile Outline",
 		description = "Demonic magic larva tile outline color.",
-		position = 19,
+		position = 25,
 		keyName = "colorTileOutlineMagic",
 		section = SECTION_COLORS
 	)
@@ -548,7 +665,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Magic Tile Fill",
 		description = "Demonic magic larva tile fill color.",
-		position = 20,
+		position = 26,
 		keyName = "colorTileFillMagic",
 		section = SECTION_COLORS
 	)
@@ -561,7 +678,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Magic Hull Outline",
 		description = "Demonic magic larva hull outline color.",
-		position = 21,
+		position = 27,
 		keyName = "colorHullOutlineMagic",
 		section = SECTION_COLORS
 	)
@@ -574,7 +691,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	@ConfigItem(
 		name = "Magic Hull Fill",
 		description = "Demonic magic larva hull fill color.",
-		position = 22,
+		position = 28,
 		keyName = "colorHullFillMagic",
 		section = SECTION_COLORS
 	)
@@ -583,10 +700,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return ColorUtil.colorWithAlpha(Color.BLUE, 16);
 	}
 
+	@Alpha
+	@ConfigItem(
+		name = "Magic Clickbox Outline",
+		description = "Demonic magic larva clickbox outline color.",
+		position = 29,
+		keyName = "colorClickBoxOutlineMagic",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxOutlineMagic()
+	{
+		return Color.BLUE;
+	}
+
+	@Alpha
+	@ConfigItem(
+		name = "Magic Clickbox Fill",
+		description = "Demonic magic larva clickbox fill color.",
+		position = 30,
+		keyName = "colorClickBoxFillMagic",
+		section = SECTION_COLORS
+	)
+	default Color colorClickBoxFillMagic()
+	{
+		return ColorUtil.colorWithAlpha(Color.BLUE, 16);
+	}
+
 	@ConfigItem(
 		name = "Magic Menu",
 		description = "Demonic magic larva menu color.",
-		position = 23,
+		position = 31,
 		keyName = "colorMenuMagic",
 		section = SECTION_COLORS
 	)

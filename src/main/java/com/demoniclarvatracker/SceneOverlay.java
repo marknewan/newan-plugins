@@ -49,7 +49,9 @@ class SceneOverlay extends Overlay
 			!config.highlightTileOutline() &&
 			!config.highlightTileFill() &&
 			!config.highlightHullOutline() &&
-			!config.highlightHullFill())
+			!config.highlightHullFill() &&
+			!config.highlightClickBoxOutline() &&
+			!config.highlightClickBoxFill())
 		{
 			return null;
 		}
@@ -85,6 +87,11 @@ class SceneOverlay extends Overlay
 			if (config.highlightHullOutline() || config.highlightHullFill())
 			{
 				renderHull(graphics, larva);
+			}
+
+			if (config.highlightClickBoxOutline() || config.highlightClickBoxFill())
+			{
+				renderClickBox(graphics, larva);
 			}
 		}
 
@@ -213,6 +220,60 @@ class SceneOverlay extends Overlay
 		}
 
 		if (config.highlightHullFill())
+		{
+			graphics.setColor(fillColor);
+			graphics.fill(shape);
+		}
+	}
+
+	private void renderClickBox(final Graphics2D graphics, final NPC npc)
+	{
+		final var lp = npc.getLocalLocation();
+		if (lp == null)
+		{
+			return;
+		}
+
+		final var shape = Perspective.getClickbox(client, npc.getModel(), npc.getCurrentOrientation(), lp.getX(), lp.getY(),
+			Perspective.getTileHeight(client, lp, npc.getWorldView().getPlane()));
+		if (shape == null)
+		{
+			return;
+		}
+
+		final Color outlineColor;
+		final Color fillColor;
+
+		switch (npc.getId())
+		{
+			case NpcID.DOM_DEMONIC_ENERGY:
+				outlineColor = config.colorClickBoxOutlineBase();
+				fillColor = config.colorClickBoxFillBase();
+				break;
+			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+				outlineColor = config.colorClickBoxOutlineRange();
+				fillColor = config.colorClickBoxFillRange();
+				break;
+			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+				outlineColor = config.colorClickBoxOutlineMagic();
+				fillColor = config.colorClickBoxFillMagic();
+				break;
+			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
+				outlineColor = config.colorClickBoxOutlineMelee();
+				fillColor = config.colorClickBoxFillMelee();
+				break;
+			default:
+				return;
+		}
+
+		if (config.highlightClickBoxOutline())
+		{
+			graphics.setColor(outlineColor);
+			graphics.setStroke(new BasicStroke((float) config.highlightClickBoxWidth()));
+			graphics.draw(shape);
+		}
+
+		if (config.highlightClickBoxFill())
 		{
 			graphics.setColor(fillColor);
 			graphics.fill(shape);
