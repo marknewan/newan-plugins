@@ -576,7 +576,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		if (config.printLagMessages())
 		{
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "DemonicLarvaTracker",
-				String.format("[DemonicLarvaTracker] Warning: lagged for %d ms on gameTick %d.", lastTickMillis, client.getTickCount()), null);
+				String.format("[<col=FF0000>D<col=00FF00>L<col=0000FF>T</col>] <col=FFFF00>Warning</col>: Tick %d was <col=FFA500>%d ms</col>.", client.getTickCount(), lastTickMillis), null);
 		}
 
 		larvae.values().forEach(Larva::revive);
