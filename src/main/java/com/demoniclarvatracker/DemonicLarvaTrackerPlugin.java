@@ -128,8 +128,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 	private boolean enabled;
 
-	private boolean debug;
-
 	@Override
 	protected void startUp()
 	{
@@ -264,10 +262,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			npc.clearSpotAnims();
 		}
 
-		if (debug)
-		{
-			log.info("{} - onNpcSpawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
-		}
+		log.debug("{} - onNpcSpawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 	}
 
 	@Subscribe
@@ -286,10 +281,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			larvae.remove(npc);
 			deadLarvae.remove(npc);
 
-			if (debug)
-			{
-				log.info("{} - onNpcDespawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
-			}
+			log.debug("{} - onNpcDespawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 		}
 		else if (id >= NpcID.DOM_BOSS && id <= NpcID.DOM_BOSS_BURROWED)
 		{
@@ -323,10 +315,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		larva.kill(client.getTickCount());
 		deadLarvae.add(npc);
 
-		if (debug)
-		{
-			log.info("{} - onActorDeath: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
-		}
+		log.debug("{} - onActorDeath: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 	}
 
 	@Subscribe()
@@ -353,10 +342,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		this.interactingNpc = npc;
 
-		if (debug)
-		{
-			log.info("{} - onInteractingChanged: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
-		}
+		log.debug("{} - onInteractingChanged: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 	}
 
 	@Subscribe
@@ -378,10 +364,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case RANGED:
 			case HITPOINTS:
 				fakeXpDrops.merge(skill, xp, Integer::sum);
-				if (debug)
-				{
-					log.info("{} - onFakeXpDrop: {} {}", client.getTickCount(), skill, xp);
-				}
+				log.debug("{} - onFakeXpDrop: {} {}", client.getTickCount(), skill, xp);
 				break;
 			default:
 				break;
@@ -421,10 +404,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case RANGED:
 			case HITPOINTS:
 				realXpDrops.merge(skill, xpDiff, Integer::sum);
-				if (debug)
-				{
-					log.info("{} - onStatChanged: {} {}", client.getTickCount(), skill, xpDiff);
-				}
+				log.debug("{} - onStatChanged: {} {}", client.getTickCount(), skill, xpDiff);
 				break;
 			default:
 				break;
@@ -461,10 +441,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		larvaHitsplats.put(larva, damage);
 
-		if (debug)
-		{
-			log.info("{} - onHitsplatApplied: {} ({}) damage={}", client.getTickCount(), npc.getName(), npc.getIndex(), damage);
-		}
+		log.debug("{} - onHitsplatApplied: {} ({}) damage={}", client.getTickCount(), npc.getName(), npc.getIndex(), damage);
 	}
 
 	@Subscribe
@@ -543,10 +520,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		processLarvae();
 
-		if (debug)
-		{
-			log.info("---- END GAME TICK {} ----", client.getTickCount());
-		}
+		log.debug("---- END GAME TICK {} ----", client.getTickCount());
 	}
 
 	private boolean inRegion()
@@ -634,11 +608,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				larva.setDeathTick(client.getTickCount());
 				deadLarvae.add(npc);
 
-				if (debug)
-				{
-					log.info("{} - processHitSplats (already dead): {} ({}) isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processHitSplats (already dead): {} ({}) isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
 				continue;
 			}
 
@@ -649,22 +620,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
 
-				if (debug)
-				{
-					log.info("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 				continue;
 			}
 
 			larva.setDeathTick(0);
 			deadLarvae.remove(npc);
 
-			if (debug)
-			{
-				log.info("{} - processHitSplats (alive): {} ({}) damage={} isDead={} deathTick={}",
-					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
-			}
+			log.debug("{} - processHitSplats (alive): {} ({}) damage={} isDead={} deathTick={}",
+				client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 		}
 	}
 
@@ -677,21 +642,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		if (interactingNpc == null || attackStyle == null)
 		{
-			if (debug)
-			{
-				log.info("{} - processXpDrops (skipping): interactingNpc={} attackStyle={}",
-					client.getTickCount(), interactingNpc, attackStyle);
-			}
+			log.debug("{} - processXpDrops (skipping): interactingNpc={} attackStyle={}",
+				client.getTickCount(), interactingNpc, attackStyle);
 			return;
 		}
 
 		final var larva = larvae.get(interactingNpc);
 		if (larva == null || larva.isDead() || larva.isProcessed())
 		{
-			if (debug)
-			{
-				log.info("{} - processXpDrops (skipping): larva null/dead/processed", client.getTickCount());
-			}
+			log.debug("{} - processXpDrops (skipping): larva null/dead/processed", client.getTickCount());
 			return;
 		}
 
@@ -711,10 +670,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			}
 			else if (skill == Skill.HITPOINTS && attackStyle != AttackStyle.CASTING)
 			{
-				if (debug)
-				{
-					log.info("{} - processXpDrops (skipping): skill={} attackStyle={} != CASTING", client.getTickCount(), skill, attackStyle);
-				}
+				log.debug("{} - processXpDrops (skipping): skill={} attackStyle={} != CASTING", client.getTickCount(), skill, attackStyle);
 				continue;
 			}
 
@@ -728,22 +684,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
 
-				if (debug)
-				{
-					log.info("{} - processXpDrops (killed): {} ({}) damage={} isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processXpDrops (killed): {} ({}) damage={} isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 			}
 			else
 			{
 				larva.setDeathTick(0);
 				deadLarvae.remove(interactingNpc);
 
-				if (debug)
-				{
-					log.info("{} - processXpDrops (alive): {} ({}) damage={} isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processXpDrops (alive): {} ({}) damage={} isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 			}
 		}
 	}
@@ -765,22 +715,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				larva.kill(client.getTickCount());
 				deadLarvae.add(npc);
 
-				if (debug)
-				{
-					log.info("{} - processLarvae (dying): {} ({}) isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processLarvae (dying): {} ({}) isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
 			}
 			else if (larva.isDead() && larva.isExpired(client.getTickCount()))
 			{
 				larva.revive();
 				deadLarvae.remove(npc);
 
-				if (debug)
-				{
-					log.info("{} - processLarvae (revive): {} ({}) isDead={} deathTick={}",
-						client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
-				}
+				log.debug("{} - processLarvae (revive): {} ({}) isDead={} deathTick={}",
+					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
 			}
 		}
 	}
@@ -810,10 +754,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 				attackStyle = AttackStyle.OTHER;
 			}
 
-			if (debug)
-			{
-				log.info("{} - updateAttackStyle: attackStyle={}", client.getTickCount(), attackStyle);
-			}
+			log.debug("{} - updateAttackStyle: attackStyle={}", client.getTickCount(), attackStyle);
 		}
 	}
 
