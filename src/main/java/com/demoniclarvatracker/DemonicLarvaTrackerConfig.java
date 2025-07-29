@@ -264,6 +264,19 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		name = "Anti-aliasing",
+		description = "Smooths out edges of outlines." +
+			"<br>Reduces 'jagged' or 'stair-step' appearance that can occur.",
+		position = 11,
+		keyName = "antiAliasing",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean antiAliasing()
+	{
+		return false;
+	}
+
 	// Colors
 
 	// Demonic Larva

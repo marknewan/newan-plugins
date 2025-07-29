@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
@@ -58,6 +59,9 @@ class SceneOverlay extends Overlay
 		{
 			return null;
 		}
+
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, config.antiAliasing() ?
+			RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		final var deadLarvae = plugin.getDeadLarvae();
 
