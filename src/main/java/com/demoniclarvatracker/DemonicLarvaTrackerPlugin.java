@@ -646,7 +646,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 					log.info("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
 						client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
 				}
-				return;
+				continue;
 			}
 
 			larva.setDeathTick(0);
