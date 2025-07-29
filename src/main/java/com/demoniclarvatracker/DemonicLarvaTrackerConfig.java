@@ -32,14 +32,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 	String SECTION_HIGHLIGHTS = "highlights";
 
 	@ConfigSection(
-		name = "Colors",
+		name = "Base Larva Colors",
 		description = "",
 		position = 2,
 		closedByDefault = true
 	)
-	String SECTION_COLORS = "colors";
+	String SECTION_BASE_COLORS = "baseLarvaColors";
 
-	// General
+	@ConfigSection(
+		name = "Melee Larva Colors",
+		description = "",
+		position = 3,
+		closedByDefault = true
+	)
+	String SECTION_MELEE_COLORS = "meleeLarvaColors";
+
+	@ConfigSection(
+		name = "Range Larva Colors",
+		description = "",
+		position = 4,
+		closedByDefault = true
+	)
+	String SECTION_RANGE_COLORS = "rangeLarvaColors";
+
+	@ConfigSection(
+		name = "Magic Larva Colors",
+		description = "",
+		position = 5,
+		closedByDefault = true
+	)
+	String SECTION_MAGIC_COLORS = "magicLarvaColors";
 
 	// General
 
@@ -318,15 +340,15 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	// Colors
 
-	// Demonic Larva
+	// Base Colors
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Outline",
-		description = "Demonic larva outline color.",
+		name = "Outline",
+		description = "",
 		position = 0,
 		keyName = "colorOutlineBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorOutlineBase()
 	{
@@ -335,11 +357,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Tile Outline",
-		description = "Demonic larva tile outline color.",
+		name = "Tile Outline",
+		description = "",
 		position = 1,
 		keyName = "colorTileOutlineBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorTileOutlineBase()
 	{
@@ -348,11 +370,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Tile Fill",
-		description = "Demonic larva tile fill color.",
+		name = "Tile Fill",
+		description = "",
 		position = 2,
 		keyName = "colorTileFillBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorTileFillBase()
 	{
@@ -361,11 +383,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Hull Outline",
-		description = "Demonic larva hull outline color.",
+		name = "Hull Outline",
+		description = "",
 		position = 3,
 		keyName = "colorHullOutlineBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorHullOutlineBase()
 	{
@@ -374,11 +396,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Hull Fill",
-		description = "Demonic larva hull fill color.",
+		name = "Hull Fill",
+		description = "",
 		position = 4,
 		keyName = "colorHullFillBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorHullFillBase()
 	{
@@ -387,11 +409,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Clickbox Outline",
-		description = "Demonic larva clickbox outline color.",
+		name = "Clickbox Outline",
+		description = "",
 		position = 5,
 		keyName = "colorClickBoxOutlineBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorClickBoxOutlineBase()
 	{
@@ -400,11 +422,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Base Clickbox Fill",
-		description = "Demonic larva clickbox fill color.",
+		name = "Clickbox Fill",
+		description = "",
 		position = 6,
 		keyName = "colorClickBoxFillBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorClickBoxFillBase()
 	{
@@ -412,26 +434,26 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Base Menu",
-		description = "Demonic larva menu color.",
+		name = "Menu Entry",
+		description = "",
 		position = 7,
 		keyName = "colorMenuBase",
-		section = SECTION_COLORS
+		section = SECTION_BASE_COLORS
 	)
 	default Color colorMenuBase()
 	{
 		return Color.WHITE;
 	}
 
-	// Demonic melee larva
+	// Melee Colors
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Outline",
-		description = "Demonic melee larva outline color.",
-		position = 8,
+		name = "Outline",
+		description = "",
+		position = 0,
 		keyName = "colorOutlineMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorOutlineMelee()
 	{
@@ -440,11 +462,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Tile Outline",
-		description = "Demonic melee larva tile outline color.",
-		position = 9,
+		name = "Tile Outline",
+		description = "",
+		position = 1,
 		keyName = "colorTileOutlineMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorTileOutlineMelee()
 	{
@@ -453,11 +475,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Tile Fill",
-		description = "Demonic melee larva tile fill color.",
-		position = 10,
+		name = "Tile Fill",
+		description = "",
+		position = 2,
 		keyName = "colorTileFillMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorTileFillMelee()
 	{
@@ -466,11 +488,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Hull Outline",
-		description = "Demonic melee larva hull outline color.",
-		position = 11,
+		name = "Hull Outline",
+		description = "",
+		position = 3,
 		keyName = "colorHullOutlineMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorHullOutlineMelee()
 	{
@@ -479,11 +501,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Hull Fill",
-		description = "Demonic melee larva hull fill color.",
-		position = 12,
+		name = "Hull Fill",
+		description = "",
+		position = 4,
 		keyName = "colorHullFillMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorHullFillMelee()
 	{
@@ -492,11 +514,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Clickbox Outline",
-		description = "Demonic melee larva clickbox outline color.",
-		position = 13,
+		name = "Clickbox Outline",
+		description = "",
+		position = 5,
 		keyName = "colorClickBoxOutlineMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorClickBoxOutlineMelee()
 	{
@@ -505,11 +527,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Melee Clickbox Fill",
-		description = "Demonic melee larva clickbox fill color.",
-		position = 14,
+		name = "Clickbox Fill",
+		description = "",
+		position = 6,
 		keyName = "colorClickBoxFillMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorClickBoxFillMelee()
 	{
@@ -517,26 +539,26 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Melee Menu",
-		description = "Demonic melee larva menu color.",
-		position = 15,
+		name = "Menu Entry",
+		description = "",
+		position = 7,
 		keyName = "colorMenuMelee",
-		section = SECTION_COLORS
+		section = SECTION_MELEE_COLORS
 	)
 	default Color colorMenuMelee()
 	{
 		return Color.RED;
 	}
 
-	// Demonic range larva
+	// Range Colors
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Outline",
-		description = "Demonic range larva outline color.",
-		position = 16,
+		name = "Outline",
+		description = "",
+		position = 0,
 		keyName = "colorOutlineRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorOutlineRange()
 	{
@@ -545,11 +567,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Tile Outline",
-		description = "Demonic range larva tile outline color.",
-		position = 17,
+		name = "Tile Outline",
+		description = "",
+		position = 1,
 		keyName = "colorTileOutlineRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorTileOutlineRange()
 	{
@@ -558,11 +580,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Tile Fill",
-		description = "Demonic range larva tile fill color.",
-		position = 18,
+		name = "Tile Fill",
+		description = "",
+		position = 2,
 		keyName = "colorTileFillRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorTileFillRange()
 	{
@@ -571,11 +593,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Hull Outline",
-		description = "Demonic range larva hull outline color.",
-		position = 19,
+		name = "Hull Outline",
+		description = "",
+		position = 3,
 		keyName = "colorHullOutlineRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorHullOutlineRange()
 	{
@@ -584,11 +606,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Hull Fill",
-		description = "Demonic range larva hull fill color.",
-		position = 20,
+		name = "Hull Fill",
+		description = "",
+		position = 4,
 		keyName = "colorHullFillRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorHullFillRange()
 	{
@@ -597,11 +619,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Clickbox Outline",
-		description = "Demonic range larva clickbox outline color.",
-		position = 21,
+		name = "Clickbox Outline",
+		description = "",
+		position = 5,
 		keyName = "colorClickBoxOutlineRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorClickBoxOutlineRange()
 	{
@@ -610,11 +632,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Range Clickbox Fill",
-		description = "Demonic range larva clickbox fill color.",
-		position = 22,
+		name = "Clickbox Fill",
+		description = "",
+		position = 6,
 		keyName = "colorClickBoxFillRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorClickBoxFillRange()
 	{
@@ -622,26 +644,26 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Range Menu",
-		description = "Demonic range larva menu color.",
-		position = 23,
+		name = "Menu Entry",
+		description = "",
+		position = 7,
 		keyName = "colorMenuRange",
-		section = SECTION_COLORS
+		section = SECTION_RANGE_COLORS
 	)
 	default Color colorMenuRange()
 	{
 		return Color.GREEN;
 	}
 
-	// Demonic magic larva
+	// Magic Colors
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Outline",
-		description = "Demonic magic larva outline color.",
-		position = 24,
+		name = "Outline",
+		description = "",
+		position = 0,
 		keyName = "colorOutlineMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorOutlineMagic()
 	{
@@ -650,11 +672,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Tile Outline",
-		description = "Demonic magic larva tile outline color.",
-		position = 25,
+		name = "Tile Outline",
+		description = "",
+		position = 1,
 		keyName = "colorTileOutlineMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorTileOutlineMagic()
 	{
@@ -663,11 +685,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Tile Fill",
-		description = "Demonic magic larva tile fill color.",
-		position = 26,
+		name = "Tile Fill",
+		description = "",
+		position = 2,
 		keyName = "colorTileFillMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorTileFillMagic()
 	{
@@ -676,11 +698,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Hull Outline",
-		description = "Demonic magic larva hull outline color.",
-		position = 27,
+		name = "Hull Outline",
+		description = "",
+		position = 3,
 		keyName = "colorHullOutlineMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorHullOutlineMagic()
 	{
@@ -689,11 +711,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Hull Fill",
-		description = "Demonic magic larva hull fill color.",
-		position = 28,
+		name = "Hull Fill",
+		description = "",
+		position = 4,
 		keyName = "colorHullFillMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorHullFillMagic()
 	{
@@ -702,11 +724,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Clickbox Outline",
-		description = "Demonic magic larva clickbox outline color.",
-		position = 29,
+		name = "Clickbox Outline",
+		description = "",
+		position = 5,
 		keyName = "colorClickBoxOutlineMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorClickBoxOutlineMagic()
 	{
@@ -715,11 +737,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		name = "Magic Clickbox Fill",
-		description = "Demonic magic larva clickbox fill color.",
-		position = 30,
+		name = "Clickbox Fill",
+		description = "",
+		position = 6,
 		keyName = "colorClickBoxFillMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorClickBoxFillMagic()
 	{
@@ -727,11 +749,11 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Magic Menu",
-		description = "Demonic magic larva menu color.",
-		position = 31,
+		name = "Menu Entry",
+		description = "",
+		position = 7,
 		keyName = "colorMenuMagic",
-		section = SECTION_COLORS
+		section = SECTION_MAGIC_COLORS
 	)
 	default Color colorMenuMagic()
 	{
