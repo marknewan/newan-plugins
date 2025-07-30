@@ -31,22 +31,19 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EnumID;
 import net.runelite.api.GameState;
+import net.runelite.api.Hitsplat;
 import net.runelite.api.NPC;
 import net.runelite.api.ParamID;
 import net.runelite.api.Renderable;
@@ -109,10 +106,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private final Map<NPC, Larva> larvae = new HashMap<>();
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<NPC> deadLarvae = new HashSet<>();
 
-	private final Map<Larva, Integer> larvaHitsplats = new HashMap<>();
+	private final Map<Larva, Hitsplat> larvaHitsplats = new HashMap<>();
 	private final Map<Skill, Integer> realXpDrops = new EnumMap<>(Skill.class);
 	private final Map<Skill, Integer> fakeXpDrops = new EnumMap<>(Skill.class);
 
@@ -165,7 +160,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		overlayManager.remove(widgetOverlay);
 
 		larvae.clear();
-		deadLarvae.clear();
 		larvaHitsplats.clear();
 		realXpDrops.clear();
 		fakeXpDrops.clear();
@@ -279,14 +273,12 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		if (isLarva(npc))
 		{
 			larvae.remove(npc);
-			deadLarvae.remove(npc);
 
 			log.debug("{} - onNpcDespawned: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 		}
 		else if (id >= NpcID.DOM_BOSS && id <= NpcID.DOM_BOSS_BURROWED)
 		{
 			larvae.clear();
-			deadLarvae.clear();
 		}
 	}
 
@@ -313,7 +305,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		}
 
 		larva.kill(client.getTickCount());
-		deadLarvae.add(npc);
 
 		log.debug("{} - onActorDeath: {} ({})", client.getTickCount(), npc.getName(), npc.getIndex());
 	}
@@ -364,6 +355,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case RANGED:
 			case HITPOINTS:
 				fakeXpDrops.merge(skill, xp, Integer::sum);
+
 				log.debug("{} - onFakeXpDrop: {} {}", client.getTickCount(), skill, xp);
 				break;
 			default:
@@ -404,6 +396,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case RANGED:
 			case HITPOINTS:
 				realXpDrops.merge(skill, xpDiff, Integer::sum);
+
 				log.debug("{} - onStatChanged: {} {}", client.getTickCount(), skill, xpDiff);
 				break;
 			default:
@@ -419,7 +412,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		final int damage = event.getHitsplat().getAmount();
+		final var hitsplat = event.getHitsplat();
+		final int damage = hitsplat.getAmount();
 		if (damage == 0)
 		{
 			return;
@@ -439,7 +433,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			return;
 		}
 
-		larvaHitsplats.put(larva, damage);
+		larvaHitsplats.put(larva, hitsplat);
 
 		log.debug("{} - onHitsplatApplied: {} ({}) damage={}", client.getTickCount(), npc.getName(), npc.getIndex(), damage);
 	}
@@ -534,21 +528,17 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		if (renderable instanceof NPC)
 		{
 			final var npc = (NPC) renderable;
-			if (isLarva(npc))
+			final var larva = larvae.get(npc);
+			if (larva != null)
 			{
-				if (config.hideDeadLarva() && deadLarvae.contains(npc))
+				if (config.hideDeadLarva() && larva.isDead())
 				{
 					return false;
 				}
 
-				switch (npc.getId())
+				if (npc.getId() != NpcID.DOM_DEMONIC_ENERGY)
 				{
-					case NpcID.DOM_DEMONIC_ENERGY_RANGE:
-					case NpcID.DOM_DEMONIC_ENERGY_MAGE:
-					case NpcID.DOM_DEMONIC_ENERGY_MELEE:
-						return !(overheads && config.hideLarvaOverheads());
-					default:
-						break;
+					return !(overheads && config.hideLarvaOverheads());
 				}
 			}
 		}
@@ -575,12 +565,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		if (config.printLagMessages())
 		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "DemonicLarvaTracker",
-				String.format("[<col=FF0000>D<col=00FF00>L<col=0000FF>T</col>] <col=FFFF00>Warning</col>: Tick %d was <col=FFA500>%d ms</col>.", client.getTickCount(), lastTickMillis), null);
+			client.addChatMessage(
+				ChatMessageType.GAMEMESSAGE,
+				"DemonicLarvaTracker",
+				String.format("[<col=FF0000>D<col=00FF00>L<col=0000FF>T</col>] <col=FFFF00>Warning</col>: Tick %d was <col=FFA500>%d ms</col>.",
+					client.getTickCount(), lastTickMillis),
+				null
+			);
 		}
 
 		larvae.values().forEach(Larva::revive);
-		deadLarvae.clear();
 		larvaHitsplats.clear();
 		realXpDrops.clear();
 		fakeXpDrops.clear();
@@ -600,13 +594,12 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		for (final var entry : larvaHitsplats.entrySet())
 		{
 			final var larva = entry.getKey();
-			final int damage = entry.getValue();
+			final int damage = entry.getValue().getAmount();
 			final var npc = larva.getNpc();
 
 			if (larva.isDead())
 			{
 				larva.setDeathTick(client.getTickCount());
-				deadLarvae.add(npc);
 
 				log.debug("{} - processHitSplats (already dead): {} ({}) isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
@@ -618,7 +611,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			if (larva.isDead())
 			{
 				larva.kill(client.getTickCount());
-				deadLarvae.add(npc);
 
 				log.debug("{} - processHitSplats (killed): {} ({}) damage={} isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
@@ -626,7 +618,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			}
 
 			larva.setDeathTick(0);
-			deadLarvae.remove(npc);
 
 			log.debug("{} - processHitSplats (alive): {} ({}) damage={} isDead={} deathTick={}",
 				client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
@@ -682,7 +673,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			if (larva.isDead())
 			{
 				larva.kill(client.getTickCount());
-				deadLarvae.add(npc);
 
 				log.debug("{} - processXpDrops (killed): {} ({}) damage={} isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
@@ -690,7 +680,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			else
 			{
 				larva.setDeathTick(0);
-				deadLarvae.remove(interactingNpc);
 
 				log.debug("{} - processXpDrops (alive): {} ({}) damage={} isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), damage, larva.isDead(), larva.getDeathTick());
@@ -713,7 +702,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			if (npcUtil.isDying(npc))
 			{
 				larva.kill(client.getTickCount());
-				deadLarvae.add(npc);
 
 				log.debug("{} - processLarvae (dying): {} ({}) isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
@@ -721,7 +709,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			else if (larva.isDead() && larva.isExpired(client.getTickCount()))
 			{
 				larva.revive();
-				deadLarvae.remove(npc);
 
 				log.debug("{} - processLarvae (revive): {} ({}) isDead={} deathTick={}",
 					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
@@ -766,7 +753,12 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			if (weaponType == 22)
 			{
 				return new AttackStyle[]{
-					AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, null, AttackStyle.DEFENSIVE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING
+					AttackStyle.ACCURATE,
+					AttackStyle.AGGRESSIVE,
+					null,
+					AttackStyle.DEFENSIVE,
+					AttackStyle.CASTING,
+					AttackStyle.DEFENSIVE_CASTING
 				};
 			}
 
@@ -874,58 +866,4 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE;
 	}
 
-	@Data
-	@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-	private static class Larva
-	{
-		private static final int MAX_HP = 2;
-		private static final int DEATH_TICK_THRESHOLD = 2;
-
-		@EqualsAndHashCode.Include
-		private final NPC npc;
-
-		private int deathTick;
-
-		private int hp = MAX_HP;
-
-		private boolean processed;
-
-		private Larva(final @NonNull NPC npc)
-		{
-			this.npc = npc;
-		}
-
-		private void applyDamage(final int amount)
-		{
-			hp = Math.max(0, hp - amount);
-		}
-
-		private boolean isDead()
-		{
-			return hp == 0;
-		}
-
-		private void kill(final int tick)
-		{
-			hp = 0;
-			deathTick = tick;
-		}
-
-		private void revive()
-		{
-			hp = MAX_HP;
-			deathTick = 0;
-		}
-
-		private boolean isExpired(final int tick)
-		{
-			return deathTick != 0 && tick > (deathTick + DEATH_TICK_THRESHOLD);
-		}
-
-		@Override
-		public String toString()
-		{
-			return String.format("[name=%s hp=%d deathTick=%d isDead=%s]", npc.getName(), hp, deathTick, isDead());
-		}
-	}
 }

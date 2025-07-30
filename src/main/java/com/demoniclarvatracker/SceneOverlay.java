@@ -56,7 +56,7 @@ class SceneOverlay extends Overlay
 			return null;
 		}
 
-		final var larvae = plugin.getLarvae().keySet();
+		final var larvae = plugin.getLarvae();
 		if (larvae.isEmpty())
 		{
 			return null;
@@ -65,33 +65,33 @@ class SceneOverlay extends Overlay
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, config.antiAliasing() ?
 			RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
-		final var deadLarvae = plugin.getDeadLarvae();
-
-		for (final var larva : larvae)
+		for (final var entry : larvae.entrySet())
 		{
-			if (larva.isDead() || (config.hideDeadLarva() && deadLarvae.contains(larva)))
+			final var npc = entry.getKey();
+
+			if (npc.isDead() || (config.hideDeadLarva() && entry.getValue().isDead()))
 			{
 				continue;
 			}
 
 			if (config.highlightOutline())
 			{
-				renderOutline(larva);
+				renderOutline(npc);
 			}
 
 			if (config.highlightTileOutline() || config.highlightTileFill())
 			{
-				renderTile(graphics, larva);
+				renderTile(graphics, npc);
 			}
 
 			if (config.highlightHullOutline() || config.highlightHullFill())
 			{
-				renderHull(graphics, larva);
+				renderHull(graphics, npc);
 			}
 
 			if (config.highlightClickBoxOutline() || config.highlightClickBoxFill())
 			{
-				renderClickBox(graphics, larva);
+				renderClickBox(graphics, npc);
 			}
 		}
 

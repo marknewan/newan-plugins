@@ -36,22 +36,22 @@ class WidgetOverlay extends Overlay
 			return null;
 		}
 
-		final var larvae = plugin.getLarvae().keySet();
+		final var larvae = plugin.getLarvae();
 		if (larvae.isEmpty())
 		{
 			return null;
 		}
 
-		final var deadLarvae = plugin.getDeadLarvae();
-
-		for (final var larva : larvae)
+		for (final var entry : larvae.entrySet())
 		{
-			if (larva.isDead() || (config.hideDeadLarva() && deadLarvae.contains(larva)))
+			final var npc = entry.getKey();
+
+			if (npc.isDead() || (config.hideDeadLarva() && entry.getValue().isDead()))
 			{
 				continue;
 			}
 
-			final var point = larva.getMinimapLocation();
+			final var point = npc.getMinimapLocation();
 			if (point == null)
 			{
 				continue;
@@ -59,7 +59,7 @@ class WidgetOverlay extends Overlay
 
 			final Color color;
 
-			switch (larva.getId())
+			switch (npc.getId())
 			{
 				case NpcID.DOM_DEMONIC_ENERGY:
 					color = config.colorMenuBase();
