@@ -32,36 +32,36 @@ public interface DemonicLarvaTrackerConfig extends Config
 	String SECTION_HIGHLIGHTS = "highlights";
 
 	@ConfigSection(
-		name = "Base Larva Colors",
+		name = "Base Larva",
 		description = "",
 		position = 2,
 		closedByDefault = true
 	)
-	String SECTION_BASE_COLORS = "baseLarvaColors";
+	String SECTION_BASE_LARVA = "baseLarva";
 
 	@ConfigSection(
-		name = "Melee Larva Colors",
+		name = "Melee Larva",
 		description = "",
 		position = 3,
 		closedByDefault = true
 	)
-	String SECTION_MELEE_COLORS = "meleeLarvaColors";
+	String SECTION_MELEE_LARVA = "meleeLarva";
 
 	@ConfigSection(
-		name = "Range Larva Colors",
+		name = "Range Larva",
 		description = "",
 		position = 4,
 		closedByDefault = true
 	)
-	String SECTION_RANGE_COLORS = "rangeLarvaColors";
+	String SECTION_RANGE_LARVA = "rangeLarva";
 
 	@ConfigSection(
-		name = "Magic Larva Colors",
+		name = "Magic Larva",
 		description = "",
 		position = 5,
 		closedByDefault = true
 	)
-	String SECTION_MAGIC_COLORS = "magicLarvaColors";
+	String SECTION_MAGIC_LARVA = "magicLarva";
 
 	// General
 
@@ -348,7 +348,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 0,
 		keyName = "colorOutlineBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorOutlineBase()
 	{
@@ -361,7 +361,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 1,
 		keyName = "colorTileOutlineBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorTileOutlineBase()
 	{
@@ -374,7 +374,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 2,
 		keyName = "colorTileFillBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorTileFillBase()
 	{
@@ -387,7 +387,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 3,
 		keyName = "colorHullOutlineBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorHullOutlineBase()
 	{
@@ -400,7 +400,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 4,
 		keyName = "colorHullFillBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorHullFillBase()
 	{
@@ -413,7 +413,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 5,
 		keyName = "colorClickBoxOutlineBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorClickBoxOutlineBase()
 	{
@@ -426,7 +426,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 6,
 		keyName = "colorClickBoxFillBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorClickBoxFillBase()
 	{
@@ -438,7 +438,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 7,
 		keyName = "colorMenuBase",
-		section = SECTION_BASE_COLORS
+		section = SECTION_BASE_LARVA
 	)
 	default Color colorMenuBase()
 	{
@@ -453,7 +453,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 0,
 		keyName = "colorOutlineMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorOutlineMelee()
 	{
@@ -466,7 +466,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 1,
 		keyName = "colorTileOutlineMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorTileOutlineMelee()
 	{
@@ -479,7 +479,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 2,
 		keyName = "colorTileFillMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorTileFillMelee()
 	{
@@ -492,7 +492,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 3,
 		keyName = "colorHullOutlineMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorHullOutlineMelee()
 	{
@@ -505,7 +505,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 4,
 		keyName = "colorHullFillMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorHullFillMelee()
 	{
@@ -518,7 +518,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 5,
 		keyName = "colorClickBoxOutlineMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorClickBoxOutlineMelee()
 	{
@@ -531,7 +531,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 6,
 		keyName = "colorClickBoxFillMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorClickBoxFillMelee()
 	{
@@ -543,7 +543,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 7,
 		keyName = "colorMenuMelee",
-		section = SECTION_MELEE_COLORS
+		section = SECTION_MELEE_LARVA
 	)
 	default Color colorMenuMelee()
 	{
@@ -558,7 +558,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 0,
 		keyName = "colorOutlineRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorOutlineRange()
 	{
@@ -571,7 +571,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 1,
 		keyName = "colorTileOutlineRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorTileOutlineRange()
 	{
@@ -584,7 +584,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 2,
 		keyName = "colorTileFillRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorTileFillRange()
 	{
@@ -597,7 +597,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 3,
 		keyName = "colorHullOutlineRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorHullOutlineRange()
 	{
@@ -610,7 +610,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 4,
 		keyName = "colorHullFillRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorHullFillRange()
 	{
@@ -623,7 +623,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 5,
 		keyName = "colorClickBoxOutlineRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorClickBoxOutlineRange()
 	{
@@ -636,7 +636,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 6,
 		keyName = "colorClickBoxFillRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorClickBoxFillRange()
 	{
@@ -648,7 +648,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 7,
 		keyName = "colorMenuRange",
-		section = SECTION_RANGE_COLORS
+		section = SECTION_RANGE_LARVA
 	)
 	default Color colorMenuRange()
 	{
@@ -663,7 +663,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 0,
 		keyName = "colorOutlineMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorOutlineMagic()
 	{
@@ -676,7 +676,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 1,
 		keyName = "colorTileOutlineMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorTileOutlineMagic()
 	{
@@ -689,7 +689,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 2,
 		keyName = "colorTileFillMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorTileFillMagic()
 	{
@@ -702,7 +702,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 3,
 		keyName = "colorHullOutlineMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorHullOutlineMagic()
 	{
@@ -715,7 +715,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 4,
 		keyName = "colorHullFillMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorHullFillMagic()
 	{
@@ -728,7 +728,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 5,
 		keyName = "colorClickBoxOutlineMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorClickBoxOutlineMagic()
 	{
@@ -741,7 +741,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 6,
 		keyName = "colorClickBoxFillMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorClickBoxFillMagic()
 	{
@@ -753,7 +753,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 		description = "",
 		position = 7,
 		keyName = "colorMenuMagic",
-		section = SECTION_MAGIC_COLORS
+		section = SECTION_MAGIC_LARVA
 	)
 	default Color colorMenuMagic()
 	{
