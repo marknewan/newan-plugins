@@ -311,12 +311,24 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		name = "Clickbox Mouseover",
+		description = "Darken color of the clickbox on mouseover.",
+		position = 13,
+		keyName = "highlightClickboxMouseover",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean highlightClickboxMouseover()
+	{
+		return false;
+	}
+
 	// Highlight Minimap
 
 	@ConfigItem(
 		name = "Highlight Minimap",
 		description = "Highlight minimap location of larva npcs.",
-		position = 13,
+		position = 14,
 		keyName = "highlightMinimap",
 		section = SECTION_HIGHLIGHTS
 	)
@@ -326,10 +338,23 @@ public interface DemonicLarvaTrackerConfig extends Config
 	}
 
 	@ConfigItem(
+		name = "Name Labels",
+		description = "Draw names above larva npcs." +
+			"<br>Only applies to range, melee, and magic larvae.",
+		position = 15,
+		keyName = "highlightNameLabel",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean highlightNameLabel()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		name = "Anti-aliasing",
 		description = "Smooths out edges of outlines." +
 			"<br>Reduces 'jagged' or 'stair-step' appearance that can occur.",
-		position = 14,
+		position = 16,
 		keyName = "antiAliasing",
 		section = SECTION_HIGHLIGHTS
 	)
@@ -550,6 +575,18 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return Color.RED;
 	}
 
+	@ConfigItem(
+		name = "Name Label",
+		description = "",
+		position = 8,
+		keyName = "nameLabelMelee",
+		section = SECTION_MELEE_LARVA
+	)
+	default String nameLabelMelee()
+	{
+		return "Melee";
+	}
+
 	// Range Colors
 
 	@Alpha
@@ -655,6 +692,18 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return Color.GREEN;
 	}
 
+	@ConfigItem(
+		name = "Name Label",
+		description = "",
+		position = 8,
+		keyName = "nameLabelRange",
+		section = SECTION_RANGE_LARVA
+	)
+	default String nameLabelRange()
+	{
+		return "Range";
+	}
+
 	// Magic Colors
 
 	@Alpha
@@ -758,5 +807,17 @@ public interface DemonicLarvaTrackerConfig extends Config
 	default Color colorMenuMagic()
 	{
 		return Color.BLUE;
+	}
+
+	@ConfigItem(
+		name = "Name Label",
+		description = "",
+		position = 8,
+		keyName = "nameLabelMagic",
+		section = SECTION_MAGIC_LARVA
+	)
+	default String nameLabelMagic()
+	{
+		return "Mage";
 	}
 }

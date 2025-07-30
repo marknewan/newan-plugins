@@ -13,6 +13,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.gameval.NpcID;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -51,7 +52,8 @@ class SceneOverlay extends Overlay
 			!config.highlightHullOutline() &&
 			!config.highlightHullFill() &&
 			!config.highlightClickBoxOutline() &&
-			!config.highlightClickBoxFill())
+			!config.highlightClickBoxFill() &&
+			!config.highlightNameLabel())
 		{
 			return null;
 		}
@@ -64,6 +66,8 @@ class SceneOverlay extends Overlay
 
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, config.antiAliasing() ?
 			RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+
+		graphics.setFont(FontManager.getRunescapeFont());
 
 		for (final var entry : larvae.entrySet())
 		{
@@ -92,6 +96,11 @@ class SceneOverlay extends Overlay
 			if (config.highlightClickBoxOutline() || config.highlightClickBoxFill())
 			{
 				renderClickBox(graphics, npc);
+			}
+
+			if (config.highlightNameLabel())
+			{
+				renderNameLabel(graphics, npc);
 			}
 		}
 
@@ -241,8 +250,8 @@ class SceneOverlay extends Overlay
 			return;
 		}
 
-		final Color outlineColor;
-		final Color fillColor;
+		Color outlineColor;
+		Color fillColor;
 
 		switch (npc.getId())
 		{
@@ -266,17 +275,92 @@ class SceneOverlay extends Overlay
 				return;
 		}
 
+		boolean mouseover = false;
+
+		if (config.highlightClickboxMouseover())
+		{
+			final var point = client.getMouseCanvasPosition();
+			mouseover = shape.contains(point.getX(), point.getY());
+		}
+
 		if (config.highlightClickBoxOutline())
 		{
+			if (mouseover)
+			{
+				outlineColor = darken(outlineColor, 0.7);
+			}
+
 			graphics.setColor(outlineColor);
+
 			graphics.setStroke(new BasicStroke((float) config.highlightClickBoxWidth()));
 			graphics.draw(shape);
 		}
 
 		if (config.highlightClickBoxFill())
 		{
+			if (mouseover)
+			{
+				fillColor = darken(fillColor, 0.5);
+			}
+
 			graphics.setColor(fillColor);
+
 			graphics.fill(shape);
 		}
+	}
+
+	private void renderNameLabel(final Graphics2D graphics, final NPC npc)
+	{
+		final String label;
+		final Color color;
+
+		switch (npc.getId())
+		{
+			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
+				label = config.nameLabelMelee();
+				color = config.colorMenuMelee();
+				break;
+			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+				label = config.nameLabelRange();
+				color = config.colorMenuRange();
+				break;
+			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+				label = config.nameLabelMagic();
+				color = config.colorMenuMagic();
+				break;
+			default:
+				return;
+		}
+
+		if (label.isBlank())
+		{
+			return;
+		}
+
+		final var point = npc.getCanvasTextLocation(graphics, label, npc.getLogicalHeight() + 40);
+		if (point == null)
+		{
+			return;
+		}
+
+		final int x = point.getX();
+		final int y = point.getY();
+
+		graphics.setColor(Color.BLACK);
+		graphics.drawString(label, x + 1, y + 1);
+		graphics.drawString(label, x + 2, y + 2);
+
+		graphics.setColor(color);
+		graphics.drawString(label, x, y);
+	}
+
+	private static Color darken(final Color color, final double factor)
+	{
+		return new Color(
+			Math.max((int) (color.getRed() * factor), 0),
+			Math.max((int) (color.getGreen() * factor), 0),
+			Math.max((int) (color.getBlue() * factor), 0),
+			color.getAlpha()
+		);
 	}
 }
