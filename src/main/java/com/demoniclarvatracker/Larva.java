@@ -73,7 +73,7 @@ class Larva
 		hp = (int) (MAX_HP * ((double) ratio / scale));
 	}
 
-	boolean isExpired(final int tick, final int timeout)
+	boolean isTimedOut(final int tick, final int timeout)
 	{
 		return deathTick != 0 && tick > (deathTick + timeout);
 	}

@@ -111,6 +111,7 @@ class SceneOverlay extends Overlay
 	{
 		final Color color;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -137,6 +138,7 @@ class SceneOverlay extends Overlay
 		final Color outlineColor;
 		final Color fillColor;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -197,6 +199,7 @@ class SceneOverlay extends Overlay
 		final Color outlineColor;
 		final Color fillColor;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -253,6 +256,7 @@ class SceneOverlay extends Overlay
 		Color outlineColor;
 		Color fillColor;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -314,6 +318,7 @@ class SceneOverlay extends Overlay
 		final String label;
 		final Color color;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY_MELEE:

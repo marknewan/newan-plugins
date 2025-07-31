@@ -148,6 +148,19 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		name = "Infobox Larva Counter",
+		description = "Displays a counter of how many larva have been absorbed." +
+			"<br>Only displayed when there is at least 1 demonic charge.",
+		position = 6,
+		keyName = "infoboxLarvaCounter",
+		section = SECTION_GENERAL
+	)
+	default boolean infoboxLarvaCounter()
+	{
+		return false;
+	}
+
 	// Highlights
 
 	// Highlight Outline

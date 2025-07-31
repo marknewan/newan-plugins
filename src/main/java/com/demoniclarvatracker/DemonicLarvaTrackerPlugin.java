@@ -62,15 +62,19 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.infobox.Counter;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 
 @Slf4j
@@ -98,6 +102,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private SceneOverlay sceneOverlay;
 	@Inject
 	private WidgetOverlay widgetOverlay;
+	@Inject
+	private InfoBoxManager infoBoxManager;
+	@Inject
+	private SpriteManager spriteManager;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -114,9 +122,11 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private NPC interactingNpc;
 	@Nullable
 	private AttackStyle attackStyle;
+	@Nullable
+	private Counter counter;
 
 	private long lastTickNano;
-	private int lastTickMillis;
+	private int absorbedLarva;
 
 	private boolean enabled;
 
@@ -142,6 +152,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		overlayManager.add(sceneOverlay);
 		overlayManager.add(widgetOverlay);
 
+		setCounter();
+
 		initAttackStyles();
 		System.arraycopy(client.getSkillExperiences(), 0, previousSkillXp, 0, previousSkillXp.length);
 	}
@@ -156,6 +168,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		overlayManager.remove(sceneOverlay);
 		overlayManager.remove(widgetOverlay);
 
+		infoBoxManager.removeInfoBox(counter);
+
 		larvae.clear();
 		larvaHitsplats.clear();
 		realXpDrops.clear();
@@ -165,9 +179,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		interactingNpc = null;
 		attackStyle = null;
+		counter = null;
 
 		lastTickNano = 0;
-		lastTickMillis = 0;
+		absorbedLarva = 0;
 	}
 
 	@Provides
@@ -453,6 +468,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		final Color color;
 
+		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -488,6 +504,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		{
 			initAttackStyles();
 		}
+		else if (event.getVarbitId() == VarbitID.DOM_MISSED_ORBS)
+		{
+			absorbedLarva = event.getValue();
+		}
 	}
 
 	@Subscribe
@@ -512,6 +532,28 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		reviveLarvae();
 
 		log.debug("---- END GAME TICK {} ----", client.getTickCount());
+	}
+
+	private void setCounter()
+	{
+		counter = new Counter(spriteManager.getSprite(SpriteID.IconBoss25x25.DOOM_OF_MOKHAIOTL, 0), this, 0)
+		{
+			@Override
+			public boolean render()
+			{
+				return absorbedLarva > 0 && config.infoboxLarvaCounter();
+			}
+
+			@Override
+			public String getText()
+			{
+				return Integer.toString(absorbedLarva);
+			}
+		};
+
+		counter.setTooltip("Demonic Charge");
+
+		infoBoxManager.addInfoBox(counter);
 	}
 
 	private boolean inRegion()
@@ -552,7 +594,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		}
 
 		final long time = System.nanoTime();
-		lastTickMillis = (int) ((time - lastTickNano) / 1_000_000L);
+		final int lastTickMillis = (int) ((time - lastTickNano) / 1_000_000L);
 		lastTickNano = time;
 
 		if (lastTickMillis < config.lagProtectionThreshold())
@@ -691,13 +733,17 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			final var npc = entry.getKey();
 			final var larva = entry.getValue();
 
-			if (larva.isDead() && larva.isExpired(client.getTickCount(), config.deathTickTimeout()))
+			if (!larva.isTimedOut(client.getTickCount(), config.deathTickTimeout()))
 			{
-				larva.revive();
-
-				log.debug("{} - reviveLarvae: {} ({}) hp={} deathTick={}",
-					client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), larva.getDeathTick());
+				continue;
 			}
+
+			final int deathTick = larva.getDeathTick();
+
+			larva.revive();
+
+			log.debug("{} - reviveLarvae: {} ({}) hp={} deathTick={}",
+				client.getTickCount(), npc.getName(), npc.getIndex(), larva.isDead(), deathTick);
 		}
 	}
 
@@ -847,8 +893,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		final int id = npc.getId();
 
+		// TODO: big larva
 		return id == NpcID.DOM_DEMONIC_ENERGY || id == NpcID.DOM_DEMONIC_ENERGY_RANGE ||
 			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE;
 	}
-
 }
