@@ -831,10 +831,25 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	// Advanced
 
+	@Range(min = 2, max = 10)
+	@ConfigItem(
+		name = "Death Tick-timeout",
+		description = "Failsafe timeout that unhides npcs after a # of ticks." +
+			"<br>Default value = 2." +
+			"<br>A sufficiently high value effectively disables the failsafe.",
+		position = 0,
+		keyName = "deathTickTimeout",
+		section = SECTION_ADVANCED
+	)
+	default int deathTickTimeout()
+	{
+		return 2;
+	}
+
 	@ConfigItem(
 		name = "Dual-hit Weapons (Unstable)",
 		description = "Support multi-hitsplat weapons by disabling hitsplat hp reconciliation.",
-		position = 0,
+		position = 1,
 		keyName = "unstableDualHitWeaponSupport",
 		section = SECTION_ADVANCED
 	)

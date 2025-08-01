@@ -13,7 +13,6 @@ import net.runelite.api.NPC;
 class Larva
 {
 	private static final int MAX_HP = 2;
-	private static final int DEATH_TICK_THRESHOLD = 2;
 
 	@EqualsAndHashCode.Include
 	@Getter(AccessLevel.PACKAGE)
@@ -74,8 +73,8 @@ class Larva
 		hp = (int) (MAX_HP * ((double) ratio / scale));
 	}
 
-	boolean isExpired(final int tick)
+	boolean isExpired(final int tick, final int timeout)
 	{
-		return deathTick != 0 && tick > (deathTick + DEATH_TICK_THRESHOLD);
+		return deathTick != 0 && tick > (deathTick + timeout);
 	}
 }

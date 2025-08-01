@@ -691,7 +691,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			final var npc = entry.getKey();
 			final var larva = entry.getValue();
 
-			if (larva.isDead() && larva.isExpired(client.getTickCount()))
+			if (larva.isDead() && larva.isExpired(client.getTickCount(), config.deathTickTimeout()))
 			{
 				larva.revive();
 
