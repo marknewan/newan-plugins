@@ -832,7 +832,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	// Advanced
 
 	@ConfigItem(
-		name = "Dual-hit Weapon Support (Unstable)",
+		name = "Dual-hit Weapons (Unstable)",
 		description = "Support multi-hitsplat weapons by disabling hitsplat hp reconciliation.",
 		position = 0,
 		keyName = "unstableDualHitWeaponSupport",
