@@ -63,6 +63,14 @@ public interface DemonicLarvaTrackerConfig extends Config
 	)
 	String SECTION_MAGIC_LARVA = "magicLarva";
 
+	@ConfigSection(
+		name = "Advanced",
+		description = "",
+		position = 6,
+		closedByDefault = true
+	)
+	String SECTION_ADVANCED = "advanced";
+
 	// General
 
 	@ConfigItem(
@@ -819,5 +827,19 @@ public interface DemonicLarvaTrackerConfig extends Config
 	default String nameLabelMagic()
 	{
 		return "Mage";
+	}
+
+	// Advanced
+
+	@ConfigItem(
+		name = "Dual-hit Weapon Support (Unstable)",
+		description = "Support multi-hitsplat weapons by disabling hitsplat hp reconciliation.",
+		position = 0,
+		keyName = "unstableDualHitWeaponSupport",
+		section = SECTION_ADVANCED
+	)
+	default boolean unstableDualHitWeaponSupport()
+	{
+		return false;
 	}
 }

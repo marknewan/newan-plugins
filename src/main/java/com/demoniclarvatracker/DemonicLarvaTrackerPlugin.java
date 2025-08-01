@@ -404,7 +404,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	@Subscribe
 	private void onHitsplatApplied(final HitsplatApplied event)
 	{
-		if (!enabled)
+		if (!enabled || config.unstableDualHitWeaponSupport())
 		{
 			return;
 		}
