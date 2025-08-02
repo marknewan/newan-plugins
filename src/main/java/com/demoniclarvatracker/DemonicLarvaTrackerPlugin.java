@@ -126,7 +126,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private Counter counter;
 
 	private long lastTickNano;
-	private int absorbedLarva;
 
 	private boolean enabled;
 
@@ -182,7 +181,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		counter = null;
 
 		lastTickNano = 0;
-		absorbedLarva = 0;
 	}
 
 	@Provides
@@ -506,7 +504,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		}
 		else if (event.getVarbitId() == VarbitID.DOM_MISSED_ORBS)
 		{
-			absorbedLarva = event.getValue();
+			if (counter != null)
+			{
+				counter.setCount(event.getValue());
+			}
 		}
 	}
 
@@ -536,18 +537,12 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 	private void setCounter()
 	{
-		counter = new Counter(spriteManager.getSprite(SpriteID.IconBoss25x25.DOOM_OF_MOKHAIOTL, 0), this, 0)
+		counter = new Counter(spriteManager.getSprite(SpriteID.IconBoss25x25.DOOM_OF_MOKHAIOTL, 0), this, client.getVarbitValue(VarbitID.DOM_MISSED_ORBS))
 		{
 			@Override
 			public boolean render()
 			{
-				return absorbedLarva > 0 && config.infoboxLarvaCounter();
-			}
-
-			@Override
-			public String getText()
-			{
-				return Integer.toString(absorbedLarva);
+				return getCount() > 0 && config.infoboxLarvaCounter();
 			}
 		};
 
