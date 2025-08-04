@@ -565,7 +565,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			final var larva = larvae.get(npc);
 			if (larva != null)
 			{
-				if (config.hideDeadLarva() && larva.isDead())
+				if (config.hideDeadLarva() && (npc.isDead() || larva.isDead()))
 				{
 					return false;
 				}
