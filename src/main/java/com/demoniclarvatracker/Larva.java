@@ -9,22 +9,21 @@ import lombok.ToString;
 import net.runelite.api.NPC;
 
 @ToString
+@Getter(AccessLevel.PACKAGE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 class Larva
 {
 	private static final int MAX_HP = 2;
 
 	@EqualsAndHashCode.Include
-	@Getter(AccessLevel.PACKAGE)
 	private final NPC npc;
 
-	@Getter(AccessLevel.PACKAGE)
 	private int hp = MAX_HP;
 
-	@Getter(AccessLevel.PACKAGE)
+	private int queuedDamage;
+
 	private int deathTick;
 
-	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
 	private boolean xpProcessed;
 
@@ -38,8 +37,9 @@ class Larva
 		return hp == 0;
 	}
 
-	void applyDamage(final int amount)
+	void damage(final int amount)
 	{
+		queuedDamage = Math.min(MAX_HP, queuedDamage + amount);
 		hp = Math.max(0, hp - amount);
 	}
 
@@ -57,6 +57,7 @@ class Larva
 	void revive()
 	{
 		recalcHp();
+		queuedDamage = 0;
 		deathTick = 0;
 	}
 
@@ -76,5 +77,15 @@ class Larva
 	boolean isTimedOut(final int tick, final int timeout)
 	{
 		return deathTick != 0 && tick > (deathTick + timeout);
+	}
+
+	void dequeueDamage(final int amount)
+	{
+		queuedDamage = Math.max(0, queuedDamage - amount);
+	}
+
+	boolean hasQueuedDamage()
+	{
+		return queuedDamage > 0;
 	}
 }
