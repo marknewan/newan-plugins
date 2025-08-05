@@ -158,7 +158,7 @@ public interface DemonicLarvaTrackerConfig extends Config
 	)
 	default boolean infoboxLarvaCounter()
 	{
-		return false;
+		return true;
 	}
 
 	// Highlights
