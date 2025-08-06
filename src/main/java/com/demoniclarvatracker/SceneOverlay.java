@@ -111,16 +111,17 @@ class SceneOverlay extends Overlay
 	{
 		final Color color;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
 				color = config.colorOutlineBase();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				color = config.colorOutlineRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				color = config.colorOutlineMagic();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
@@ -138,7 +139,6 @@ class SceneOverlay extends Overlay
 		final Color outlineColor;
 		final Color fillColor;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -146,10 +146,12 @@ class SceneOverlay extends Overlay
 				fillColor = config.colorTileFillBase();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				outlineColor = config.colorTileOutlineRange();
 				fillColor = config.colorTileFillRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				outlineColor = config.colorTileOutlineMagic();
 				fillColor = config.colorTileFillMagic();
 				break;
@@ -199,7 +201,6 @@ class SceneOverlay extends Overlay
 		final Color outlineColor;
 		final Color fillColor;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -207,10 +208,12 @@ class SceneOverlay extends Overlay
 				fillColor = config.colorHullFillBase();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				outlineColor = config.colorHullOutlineRange();
 				fillColor = config.colorHullFillRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				outlineColor = config.colorHullOutlineMagic();
 				fillColor = config.colorHullFillMagic();
 				break;
@@ -256,7 +259,6 @@ class SceneOverlay extends Overlay
 		Color outlineColor;
 		Color fillColor;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
@@ -264,10 +266,12 @@ class SceneOverlay extends Overlay
 				fillColor = config.colorClickBoxFillBase();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				outlineColor = config.colorClickBoxOutlineRange();
 				fillColor = config.colorClickBoxFillRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				outlineColor = config.colorClickBoxOutlineMagic();
 				fillColor = config.colorClickBoxFillMagic();
 				break;
@@ -318,7 +322,6 @@ class SceneOverlay extends Overlay
 		final String label;
 		final Color color;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
@@ -326,10 +329,12 @@ class SceneOverlay extends Overlay
 				color = config.colorMenuMelee();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				label = config.nameLabelRange();
 				color = config.colorMenuRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				label = config.nameLabelMagic();
 				color = config.colorMenuMagic();
 				break;

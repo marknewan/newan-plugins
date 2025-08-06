@@ -88,6 +88,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 {
 	private static final Set<Integer> REGION_IDS = Set.of(5269, 13668, 14180);
 
+	// TODO: replace with gamevals when updated
+	static final int NPC_ID_GIANT_DEMONIC_RANGE_LARVA = 14788;
+	static final int NPC_ID_GIANT_DEMONIC_MAGIC_LARVA = 14789;
+
 	@Inject
 	private Client client;
 	@Inject
@@ -466,16 +470,17 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		final Color color;
 
-		// TODO: big larva
 		switch (npc.getId())
 		{
 			case NpcID.DOM_DEMONIC_ENERGY:
 				color = config.colorMenuBase();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 				color = config.colorMenuRange();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 				color = config.colorMenuMagic();
 				break;
 			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
@@ -898,8 +903,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		final int id = npc.getId();
 
-		// TODO: big larva
 		return id == NpcID.DOM_DEMONIC_ENERGY || id == NpcID.DOM_DEMONIC_ENERGY_RANGE ||
-			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE;
+			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE ||
+			id == NPC_ID_GIANT_DEMONIC_RANGE_LARVA || id == NPC_ID_GIANT_DEMONIC_MAGIC_LARVA;
 	}
 }

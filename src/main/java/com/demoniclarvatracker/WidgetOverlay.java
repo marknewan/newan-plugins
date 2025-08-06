@@ -59,16 +59,17 @@ class WidgetOverlay extends Overlay
 
 			final Color color;
 
-			// TODO: big larva
 			switch (npc.getId())
 			{
 				case NpcID.DOM_DEMONIC_ENERGY:
 					color = config.colorMenuBase();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+				case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
 					color = config.colorMenuRange();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+				case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
 					color = config.colorMenuMagic();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_MELEE:

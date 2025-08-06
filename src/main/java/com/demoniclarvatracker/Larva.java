@@ -7,18 +7,18 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import net.runelite.api.NPC;
+import net.runelite.api.gameval.NpcID;
 
 @ToString
 @Getter(AccessLevel.PACKAGE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 class Larva
 {
-	private static final int MAX_HP = 2;
-
 	@EqualsAndHashCode.Include
 	private final NPC npc;
 
-	private int hp = MAX_HP;
+	private final int maxHp;
+	private int hp;
 
 	private int queuedDamage;
 
@@ -30,6 +30,24 @@ class Larva
 	Larva(final @NonNull NPC npc)
 	{
 		this.npc = npc;
+
+		switch (npc.getId())
+		{
+			case NpcID.DOM_DEMONIC_ENERGY:
+			case NpcID.DOM_DEMONIC_ENERGY_RANGE:
+			case NpcID.DOM_DEMONIC_ENERGY_MAGE:
+			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
+				maxHp = 2;
+				break;
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
+			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
+				maxHp = 4;
+				break;
+			default:
+				throw new IllegalArgumentException("Not a larva: " + npc.getName());
+		}
+
+		this.hp = maxHp;
 	}
 
 	boolean isDead()
@@ -39,7 +57,7 @@ class Larva
 
 	void damage(final int amount)
 	{
-		queuedDamage = Math.min(MAX_HP, queuedDamage + amount);
+		queuedDamage = Math.min(maxHp, queuedDamage + amount);
 		hp = Math.max(0, hp - amount);
 	}
 
@@ -71,7 +89,7 @@ class Larva
 			return;
 		}
 
-		hp = (int) (MAX_HP * ((double) ratio / scale));
+		hp = (int) (maxHp * ((double) ratio / scale));
 	}
 
 	boolean isTimedOut(final int tick, final int timeout)
