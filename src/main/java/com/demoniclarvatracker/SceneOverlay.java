@@ -73,7 +73,7 @@ class SceneOverlay extends Overlay
 		{
 			final var npc = entry.getKey();
 
-			if (npc.isDead() || (config.hideDeadLarva() && entry.getValue().isDead()))
+			if (config.hideHighlightOnDeath() && (npc.isDead() || (config.hideDeadLarva() && entry.getValue().isDead())))
 			{
 				continue;
 			}

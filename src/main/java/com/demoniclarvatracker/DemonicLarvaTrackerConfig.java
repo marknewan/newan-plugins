@@ -384,6 +384,18 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		name = "Hide Highlights On Death",
+		description = "Hides the highlighting of dead npcs.",
+		position = 17,
+		keyName = "hideHighlightOnDeath",
+		section = SECTION_HIGHLIGHTS
+	)
+	default boolean hideHighlightOnDeath()
+	{
+		return true;
+	}
+
 	// Colors
 
 	// Base Colors
