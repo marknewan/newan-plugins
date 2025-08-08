@@ -27,7 +27,7 @@ dependencies {
 }
 
 group = 'com.demoniclarvatracker'
-version = '1.5'
+version = '1.5.1'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
