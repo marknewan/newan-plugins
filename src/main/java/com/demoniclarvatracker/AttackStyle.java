@@ -24,29 +24,15 @@
  */
 package com.demoniclarvatracker;
 
-import lombok.Getter;
-import net.runelite.api.Skill;
-
 enum AttackStyle
 {
-	ACCURATE("Accurate", Skill.ATTACK),
-	AGGRESSIVE("Aggressive", Skill.STRENGTH),
-	DEFENSIVE("Defensive", Skill.DEFENCE),
-	CONTROLLED("Controlled", Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE),
-	RANGING("Ranging", Skill.RANGED),
-	LONGRANGE("Longrange", Skill.RANGED, Skill.DEFENCE),
-	CASTING("Casting", Skill.MAGIC),
-	DEFENSIVE_CASTING("Defensive Casting", Skill.MAGIC, Skill.DEFENCE),
-	OTHER("Other");
-
-	@Getter
-	private final String name;
-	@Getter
-	private final Skill[] skills;
-
-	AttackStyle(final String name, final Skill... skills)
-	{
-		this.name = name;
-		this.skills = skills;
-	}
+	ACCURATE,
+	AGGRESSIVE,
+	DEFENSIVE,
+	CONTROLLED,
+	RANGING,
+	LONGRANGE,
+	CASTING,
+	DEFENSIVE_CASTING,
+	OTHER;
 }

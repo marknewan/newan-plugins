@@ -87,6 +87,9 @@ import net.runelite.client.util.ColorUtil;
 public class DemonicLarvaTrackerPlugin extends Plugin
 {
 	private static final Set<Integer> REGION_IDS = Set.of(5269, 13668, 14180);
+	private static final AttackStyle[] ATTACK_STYLES_POWERED_STAVE = new AttackStyle[]{
+		AttackStyle.CASTING, AttackStyle.CASTING, null, AttackStyle.DEFENSIVE, null, null
+	};
 
 	// TODO: replace with gamevals when updated
 	static final int NPC_ID_GIANT_DEMONIC_RANGE_LARVA = 14788;
@@ -411,7 +414,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			case HITPOINTS:
 				realXpDrops.merge(skill, xpDiff, Integer::sum);
 
-				log.debug("{} - onStatChanged: {} {}", client.getTickCount(), skill, xpDiff);
+				log.debug("{} - onStatChanged: skill={} xp={}", client.getTickCount(), skill, xpDiff);
 				break;
 			default:
 				break;
@@ -769,6 +772,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private void updateAttackStyle(final int equippedWeaponType, int attackStyleIndex, final int castingMode)
 	{
 		final AttackStyle[] attackStyles = getWeaponTypeStyles(equippedWeaponType);
+
 		if (attackStyleIndex < attackStyles.length)
 		{
 			if (attackStyleIndex == 4)
@@ -777,7 +781,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 			}
 
 			attackStyle = attackStyles[attackStyleIndex];
-			if (attackStyle == null)
+
+			if (attackStyle == AttackStyle.DEFENSIVE)
+			{
+				if (Arrays.equals(attackStyles, ATTACK_STYLES_POWERED_STAVE))
+				{
+					attackStyle = AttackStyle.DEFENSIVE_CASTING;
+				}
+			}
+			else if (attackStyle == null)
 			{
 				attackStyle = AttackStyle.OTHER;
 			}
