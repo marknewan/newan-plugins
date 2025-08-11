@@ -16,7 +16,8 @@ Features for demonic larva at the boss Doom of Mokhaiotl.
 * Recolor menu entries for larva names for easy identification
 * Hide overheads for melee, range, and magic demonic larva
 * Draw names above npcs for alternative identification
-* Remove ugly spawn animation
+* Remove spawn animations
+    * Prevent the clickbox that extends from ceiling to ground on spawn
 
 ### Contribution
 
