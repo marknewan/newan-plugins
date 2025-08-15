@@ -136,6 +136,37 @@ class SceneOverlay extends Overlay
 
 	private void renderTile(final Graphics2D graphics, final NPC npc)
 	{
+		final Polygon polygon;
+
+		switch (config.highlightTileMode())
+		{
+			case TILE:
+				polygon = npc.getCanvasTilePoly();
+				break;
+			case TRUE_TILE:
+				var lp = LocalPoint.fromWorld(client.getTopLevelWorldView(), npc.getWorldLocation());
+				if (lp == null)
+				{
+					return;
+				}
+				final var comp = npc.getTransformedComposition();
+				if (comp == null)
+				{
+					return;
+				}
+				final int size = comp.getSize();
+				lp = lp.plus(Perspective.LOCAL_TILE_SIZE * (size - 1) / 2, Perspective.LOCAL_TILE_SIZE * (size - 1) / 2);
+				polygon = Perspective.getCanvasTileAreaPoly(client, lp, size);
+				break;
+			default:
+				return;
+		}
+
+		if (polygon == null)
+		{
+			return;
+		}
+
 		final Color outlineColor;
 		final Color fillColor;
 
@@ -163,25 +194,6 @@ class SceneOverlay extends Overlay
 				return;
 		}
 
-		final Polygon polygon;
-
-		switch (config.highlightTileMode())
-		{
-			case TILE:
-				polygon = npc.getCanvasTilePoly();
-				break;
-			case TRUE_TILE:
-				final var lp = LocalPoint.fromWorld(client.getTopLevelWorldView(), npc.getWorldLocation());
-				if (lp == null)
-				{
-					return;
-				}
-				polygon = Perspective.getCanvasTilePoly(client, lp);
-				break;
-			default:
-				return;
-		}
-
 		if (config.highlightTileOutline())
 		{
 			graphics.setColor(outlineColor);
@@ -198,6 +210,12 @@ class SceneOverlay extends Overlay
 
 	private void renderHull(final Graphics2D graphics, final NPC npc)
 	{
+		final var shape = npc.getConvexHull();
+		if (shape == null)
+		{
+			return;
+		}
+
 		final Color outlineColor;
 		final Color fillColor;
 
@@ -224,8 +242,6 @@ class SceneOverlay extends Overlay
 			default:
 				return;
 		}
-
-		final var shape = npc.getConvexHull();
 
 		if (config.highlightHullOutline())
 		{
@@ -299,7 +315,6 @@ class SceneOverlay extends Overlay
 			}
 
 			graphics.setColor(outlineColor);
-
 			graphics.setStroke(new BasicStroke((float) config.highlightClickBoxWidth()));
 			graphics.draw(shape);
 		}
@@ -312,7 +327,6 @@ class SceneOverlay extends Overlay
 			}
 
 			graphics.setColor(fillColor);
-
 			graphics.fill(shape);
 		}
 	}

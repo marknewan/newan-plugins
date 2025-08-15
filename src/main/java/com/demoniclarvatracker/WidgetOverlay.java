@@ -31,15 +31,20 @@ class WidgetOverlay extends Overlay
 	@Override
 	public Dimension render(final Graphics2D graphics2D)
 	{
-		if (!config.highlightMinimap())
+		if (config.highlightMinimap())
 		{
-			return null;
+			renderMinimap(graphics2D);
 		}
 
+		return null;
+	}
+
+	private void renderMinimap(final Graphics2D graphics2D)
+	{
 		final var larvae = plugin.getLarvae();
 		if (larvae.isEmpty())
 		{
-			return null;
+			return;
 		}
 
 		for (final var entry : larvae.entrySet())
@@ -84,7 +89,5 @@ class WidgetOverlay extends Overlay
 			graphics2D.setColor(color);
 			graphics2D.fillOval(point.getX() - MINIMAP_DOT_RADIUS / 2, point.getY() - MINIMAP_DOT_RADIUS / 2, MINIMAP_DOT_RADIUS, MINIMAP_DOT_RADIUS);
 		}
-
-		return null;
 	}
 }
