@@ -39,8 +39,8 @@ class Larva
 			case NpcID.DOM_DEMONIC_ENERGY_MELEE:
 				maxHp = 2;
 				break;
-			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
-			case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
+			case NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE:
+			case NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE:
 				maxHp = 4;
 				break;
 			default:

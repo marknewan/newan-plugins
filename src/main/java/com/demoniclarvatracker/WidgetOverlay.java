@@ -65,11 +65,11 @@ class WidgetOverlay extends Overlay
 					color = config.colorMenuBase();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_RANGE:
-				case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_RANGE_LARVA:
+				case NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE:
 					color = config.colorMenuRange();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_MAGE:
-				case DemonicLarvaTrackerPlugin.NPC_ID_GIANT_DEMONIC_MAGIC_LARVA:
+				case NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE:
 					color = config.colorMenuMagic();
 					break;
 				case NpcID.DOM_DEMONIC_ENERGY_MELEE:
