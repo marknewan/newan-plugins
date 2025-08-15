@@ -83,7 +83,7 @@ import net.runelite.client.util.ColorUtil;
 @PluginDescriptor(
 	name = "Demonic Larva Tracker",
 	description = "Tracks demonic larva at Doom of Mokhaiotl.",
-	tags = {"doom", "mokhaiotl", "demonic", "larva", "grub", "tracker"}
+	tags = {"doom", "mokhaiotl", "demonic", "larva", "grub", "tracker", "delve"}
 )
 public class DemonicLarvaTrackerPlugin extends Plugin
 {
