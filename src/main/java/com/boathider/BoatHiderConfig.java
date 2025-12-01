@@ -8,7 +8,7 @@ import net.runelite.client.config.ConfigSection;
 @ConfigGroup(BoatHiderConfig.CONFIG_GROUP)
 public interface BoatHiderConfig extends Config
 {
-	String CONFIG_GROUP = "com/boathider";
+	String CONFIG_GROUP = "boat-hider";
 
 	@ConfigSection(
 		name = "Dynamic Objects",
