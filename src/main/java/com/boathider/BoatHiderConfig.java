@@ -20,8 +20,8 @@ public interface BoatHiderConfig extends Config
 	@ConfigSection(
 		name = "Static Objects (read desc.)",
 		description = "Non-animated objects that require reloading the boat to hide/unhide." +
-			"<br>Often it is sufficient to simply navigate/stop-navigating the helm of the boat." +
-			"<br>Switching boats, teleporting away, or re-logging forces a reload.",
+			"<br>On a skiff, it is sufficient to simply navigate/stop-navigating the helm of the boat to reload it." +
+			"<br>Otherwise, switching boats, teleporting away, or re-logging forces a reload.",
 		position = 2,
 		closedByDefault = true
 	)
