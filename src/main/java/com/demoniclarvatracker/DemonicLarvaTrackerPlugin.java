@@ -68,6 +68,8 @@ import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
+import net.runelite.client.callback.RenderCallback;
+import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.SpriteManager;
@@ -85,7 +87,7 @@ import net.runelite.client.util.ColorUtil;
 	description = "Tracks demonic larva at Doom of Mokhaiotl.",
 	tags = {"doom", "mokhaiotl", "demonic", "larva", "grub", "tracker", "delve"}
 )
-public class DemonicLarvaTrackerPlugin extends Plugin
+public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 {
 	private static final Set<Integer> REGION_IDS = Set.of(5269, 13668, 14180);
 	private static final AttackStyle[] ATTACK_STYLES_POWERED_STAVE = new AttackStyle[]{
@@ -110,8 +112,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	private InfoBoxManager infoBoxManager;
 	@Inject
 	private SpriteManager spriteManager;
-
-	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+	@Inject
+	private RenderCallbackManager renderCallbackManager;
 
 	@Getter(AccessLevel.PACKAGE)
 	private final Map<NPC, Larva> larvae = new HashMap<>();
@@ -150,7 +152,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 
 		enabled = true;
 
-		hooks.registerRenderableDrawListener(drawListener);
+		renderCallbackManager.register(this);
 
 		overlayManager.add(sceneOverlay);
 		overlayManager.add(widgetOverlay);
@@ -166,7 +168,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 	{
 		enabled = false;
 
-		hooks.unregisterRenderableDrawListener(drawListener);
+		renderCallbackManager.unregister(this);
 
 		overlayManager.remove(sceneOverlay);
 		overlayManager.remove(widgetOverlay);
@@ -564,7 +566,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin
 		return wv.isInstance() && Arrays.stream(wv.getMapRegions()).anyMatch(REGION_IDS::contains);
 	}
 
-	private boolean shouldDraw(final Renderable renderable, final boolean overheads)
+	@Override
+	public boolean addEntity(final Renderable renderable, final boolean overheads)
 	{
 		if (renderable instanceof NPC)
 		{
