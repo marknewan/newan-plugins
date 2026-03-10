@@ -8,20 +8,18 @@ Features for demonic larva at the boss Doom of Mokhaiotl.
 
 * Death prediction
     * Immediately hide larva that are predicted to die
-    * Determined by a combination of combat xp gained and hitsplat damage each tick
-    * Typically can predicate death 1-3 ticks before server confirmation
-* Highlighting for outline, tile, hull, and clickbox
-    * Highlighting is hidden when a larva is predicted to die (optional)
-* Infobox displaying number of absorbed larva
-* Recolor menu entries for larva names for easy identification
-* Hide overheads for melee, range, and magic demonic larva
-* Draw names above npcs for alternative identification
-* Remove spawn animations
-    * Prevent the clickbox that extends from ceiling to ground on spawn
+* Highlight tile, outline, hull, and clickbox
+    * Highlights are hidden when a larva is predicted to die
+* Hide overheads
+* Recolor menu entries
+* Absorbed larva infobox
+* Draw names above npcs
+* Remove spawn animation
+* Expand loot interface
 
 ### Contribution
 
-Accepting feature and pull requests.
+Create an issue before submitting a pull request.
 
 ### Attribution
 
