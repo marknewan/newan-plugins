@@ -48,7 +48,6 @@ import net.runelite.api.NPC;
 import net.runelite.api.ParamID;
 import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
-import net.runelite.api.StructComposition;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
@@ -71,7 +70,6 @@ import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.callback.Hooks;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
@@ -102,8 +100,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	private Client client;
 	@Inject
 	private ClientThread clientThread;
-	@Inject
-	private Hooks hooks;
 	@Inject
 	private DemonicLarvaTrackerConfig config;
 	@Inject
@@ -191,6 +187,30 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		counter = null;
 
 		lastTickNano = 0;
+	}
+
+	@Override
+	public boolean addEntity(final Renderable renderable, final boolean overheads)
+	{
+		if (renderable instanceof NPC)
+		{
+			final var npc = (NPC) renderable;
+			final var larva = larvae.get(npc);
+			if (larva != null)
+			{
+				if (config.hideDeadLarva() && (npc.isDead() || larva.isDead()))
+				{
+					return false;
+				}
+
+				if (npc.getId() != NpcID.DOM_DEMONIC_ENERGY)
+				{
+					return !(overheads && config.hideLarvaOverheads());
+				}
+			}
+		}
+
+		return true;
 	}
 
 	@Provides
@@ -290,7 +310,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		}
 
 		final var npc = event.getNpc();
-		final int id = npc.getId();
+		final var id = npc.getId();
 
 		if (isLarva(npc))
 		{
@@ -396,15 +416,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		final var skill = event.getSkill();
 		final var xp = event.getXp();
 
-		final int idx = skill.ordinal();
-		final int prevXp = previousSkillXp[idx];
+		final var idx = skill.ordinal();
+		final var prevXp = previousSkillXp[idx];
 		previousSkillXp[idx] = xp;
 		if (prevXp == 0)
 		{
 			return;
 		}
 
-		final int xpDiff = xp - prevXp;
+		final var xpDiff = xp - prevXp;
 		if (xpDiff <= 0)
 		{
 			return;
@@ -435,7 +455,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		}
 
 		final var hitsplat = event.getHitsplat();
-		final int damage = hitsplat.getAmount();
+		final var damage = hitsplat.getAmount();
 		if (damage == 0)
 		{
 			return;
@@ -580,30 +600,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		return wv.isInstance() && Arrays.stream(wv.getMapRegions()).anyMatch(REGION_IDS::contains);
 	}
 
-	@Override
-	public boolean addEntity(final Renderable renderable, final boolean overheads)
-	{
-		if (renderable instanceof NPC)
-		{
-			final var npc = (NPC) renderable;
-			final var larva = larvae.get(npc);
-			if (larva != null)
-			{
-				if (config.hideDeadLarva() && (npc.isDead() || larva.isDead()))
-				{
-					return false;
-				}
-
-				if (npc.getId() != NpcID.DOM_DEMONIC_ENERGY)
-				{
-					return !(overheads && config.hideLarvaOverheads());
-				}
-			}
-		}
-
-		return true;
-	}
-
 	private boolean processLag()
 	{
 		if (lastTickNano == 0)
@@ -612,8 +608,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return false;
 		}
 
-		final long time = System.nanoTime();
-		final int lastTickMillis = (int) ((time - lastTickNano) / 1_000_000L);
+		final var time = System.nanoTime();
+		final var lastTickMillis = (int) ((time - lastTickNano) / 1_000_000L);
 		lastTickNano = time;
 
 		if (lastTickMillis < config.lagProtectionThreshold())
@@ -654,7 +650,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			final var larva = entry.getKey();
 			final var npc = larva.getNpc();
 
-			final int damage = entry.getValue().getAmount();
+			final var damage = entry.getValue().getAmount();
 
 			log.debug("{} - processHitSplats (damage): {} ({}) queuedDamage={} damage={}",
 				client.getTickCount(), npc.getName(), npc.getIndex(), larva.getQueuedDamage(), damage);
@@ -730,7 +726,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 			larva.setXpProcessed(true);
 
-			final int damage = calcDamageFromXpDrop(skill, xp);
+			final var damage = calcDamageFromXpDrop(skill, xp);
 			larva.damage(damage);
 
 			if (larva.isDead())
@@ -767,7 +763,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 				continue;
 			}
 
-			final int deathTick = larva.getDeathTick();
+			final var deathTick = larva.getDeathTick();
 
 			larva.revive();
 
@@ -778,16 +774,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 	private void initAttackStyles()
 	{
-		final int equippedWeaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
-		final int attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
-		final int castingModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
+		final var equippedWeaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
+		final var attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
+		final var castingModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
 
 		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
 	}
 
 	private void updateAttackStyle(final int equippedWeaponType, int attackStyleIndex, final int castingMode)
 	{
-		final AttackStyle[] attackStyles = getWeaponTypeStyles(equippedWeaponType);
+		final var attackStyles = getWeaponTypeStyles(equippedWeaponType);
 
 		if (attackStyleIndex < attackStyles.length)
 		{
@@ -816,7 +812,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 	private AttackStyle[] getWeaponTypeStyles(final int weaponType)
 	{
-		final int weaponStyleEnum = client.getEnum(EnumID.WEAPON_STYLES).getIntValue(weaponType);
+		final var weaponStyleEnum = client.getEnum(EnumID.WEAPON_STYLES).getIntValue(weaponType);
 		if (weaponStyleEnum == -1)
 		{
 			if (weaponType == 22)
@@ -839,16 +835,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			}
 			return new AttackStyle[0];
 		}
-		final int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
+		final var weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
 
-		final AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
-		int i = 0;
-		for (final int style : weaponStyleStructs)
+		final var styles = new AttackStyle[weaponStyleStructs.length];
+		var i = 0;
+		for (final var style : weaponStyleStructs)
 		{
-			final StructComposition attackStyleStruct = client.getStructComposition(style);
-			final String attackStyleName = attackStyleStruct.getStringValue(ParamID.ATTACK_STYLE_NAME);
+			final var attackStyleStruct = client.getStructComposition(style);
+			final var attackStyleName = attackStyleStruct.getStringValue(ParamID.ATTACK_STYLE_NAME);
 
-			AttackStyle attackStyle = AttackStyle.valueOf(attackStyleName.toUpperCase());
+			var attackStyle = AttackStyle.valueOf(attackStyleName.toUpperCase());
 			if (attackStyle == AttackStyle.OTHER)
 			{
 				++i;
@@ -929,7 +925,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return false;
 		}
 
-		final int id = npc.getId();
+		final var id = npc.getId();
 
 		return id == NpcID.DOM_DEMONIC_ENERGY || id == NpcID.DOM_DEMONIC_ENERGY_RANGE ||
 			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE ||

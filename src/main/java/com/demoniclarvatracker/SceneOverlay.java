@@ -154,7 +154,7 @@ class SceneOverlay extends Overlay
 				{
 					return;
 				}
-				final int size = comp.getSize();
+				final var size = comp.getSize();
 				lp = lp.plus(Perspective.LOCAL_TILE_SIZE * (size - 1) / 2, Perspective.LOCAL_TILE_SIZE * (size - 1) / 2);
 				polygon = Perspective.getCanvasTileAreaPoly(client, lp, size);
 				break;
@@ -299,7 +299,7 @@ class SceneOverlay extends Overlay
 				return;
 		}
 
-		boolean mouseover = false;
+		var mouseover = false;
 
 		if (config.highlightClickboxMouseover())
 		{
@@ -367,8 +367,8 @@ class SceneOverlay extends Overlay
 			return;
 		}
 
-		final int x = point.getX();
-		final int y = point.getY();
+		final var x = point.getX();
+		final var y = point.getY();
 
 		graphics.setColor(Color.BLACK);
 		graphics.drawString(label, x + 1, y + 1);

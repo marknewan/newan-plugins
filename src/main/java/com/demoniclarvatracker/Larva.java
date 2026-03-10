@@ -81,8 +81,8 @@ class Larva
 
 	void recalcHp()
 	{
-		final int ratio = npc.getHealthRatio();
-		final int scale = npc.getHealthScale();
+		final var ratio = npc.getHealthRatio();
+		final var scale = npc.getHealthScale();
 
 		if (ratio == -1 || scale == -1)
 		{
