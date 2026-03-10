@@ -161,6 +161,18 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		name = "Expand Loot UI",
+		description = "Expands the loot interface when necessary to show hidden items.",
+		position = 7,
+		keyName = "expandLootUI",
+		section = SECTION_GENERAL
+	)
+	default boolean expandLootUI()
+	{
+		return true;
+	}
+
 	// Highlights
 
 	// Highlight Outline
