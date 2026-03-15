@@ -58,12 +58,12 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.AnimationID;
 import net.runelite.api.gameval.InterfaceID;
-import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
@@ -545,13 +545,29 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	}
 
 	@Subscribe
-	public void onScriptPostFired(final ScriptPostFired event)
+	public void onScriptPreFired(final ScriptPreFired event)
 	{
 		// https://github.com/runelite/cs2-scripts/blob/master/scripts/%5Bclientscript%2Cscript7931%5D.cs2
-		if (event.getScriptId() == 7931 && config.expandLootUI())
+		if (!enabled || event.getScriptId() != 7931 || !config.expandLootUI())
 		{
-			expandLootUI();
+			return;
 		}
+
+		final var scriptEvent = event.getScriptEvent();
+		if (scriptEvent == null)
+		{
+			return;
+		}
+
+		final var claimed = (int) scriptEvent.getArguments()[2] == 1;
+		final var id = claimed ? InventoryID.DOM_LOOTPILE : InventoryID.DOM_LOOTPILE_DURING;
+		final var container = client.getItemContainer(id);
+		if (container == null)
+		{
+			return;
+		}
+
+		expandLootUI(container.count(), claimed);
 	}
 
 	@Subscribe
@@ -932,54 +948,81 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			id == NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE || id == NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE;
 	}
 
-	private void expandLootUI()
+	private void expandLootUI(final int itemCount, final boolean claimed)
 	{
-		final var wUniverse = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
-		final var wWindow = client.getWidget(InterfaceID.DomEndLevelUi.WINDOW);
-		final var wLootSection = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT);
-		final var wLootContents = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS);
-		final var wDelveSection = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE);
-		final var wDelveHint = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT);
-		if (wUniverse == null ||
-			wWindow == null ||
-			wLootSection == null ||
-			wLootContents == null ||
-			wDelveSection == null ||
-			wDelveHint == null)
+		final var itemsPerRow = 8;
+
+		if (itemCount <= itemsPerRow)
 		{
 			return;
 		}
 
-		final var hiddenItems = Arrays.stream(wLootContents.getDynamicChildren())
-			.skip(16)
-			.anyMatch(c -> c != null && c.getItemId() != ItemID.BLANKOBJECT);
-		if (!hiddenItems)
+		if (itemCount <= (itemsPerRow * 2))
+		{
+			final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS);
+			if (w != null)
+			{
+				w.setOriginalHeight(w.getOriginalHeight() - 2);
+				w.revalidate();
+			}
+			return;
+		}
+
+		// item sprite height
+		var height = 32;
+
+		// max item count is 27
+		if (itemCount > (itemsPerRow * 3))
+		{
+			height *= 2;
+			if (claimed)
+			{
+				// padding above value total
+				height += 8;
+			}
+		}
+
+		final var root = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
+		if (root == null)
 		{
 			return;
 		}
 
-		wUniverse.setXPositionMode(0);
-		wUniverse.setYPositionMode(0);
-		wUniverse.setWidthMode(0);
-		wUniverse.setHeightMode(0);
-		wUniverse.setOriginalWidth(512);
-		wWindow.setYPositionMode(0);
-		wLootSection.setOriginalHeight(215);
+		// revalidating the default root changes its size for some reason
+		// so make its position and dimensions absolute
+		root.setXPositionMode(0);
+		root.setYPositionMode(0);
+		root.setWidthMode(0);
+		root.setHeightMode(0);
+		root.setOriginalWidth(root.getWidth());
+		root.setOriginalHeight(root.getHeight());
 
-		if (wDelveSection.isHidden() || wDelveHint.isHidden())
+		var w = client.getWidget(InterfaceID.DomEndLevelUi.WINDOW);
+		if (w != null)
 		{
-			wUniverse.setOriginalHeight(270);
-			wWindow.setOriginalHeight(270);
-		}
-		else
-		{
-			wUniverse.setOriginalHeight(334);
-			wWindow.setOriginalHeight(334);
-			wDelveSection.setOriginalY(225);
-			wDelveHint.setText("<col=FF0000>Rip and tear, until it is done.</col>");
+			w.setOriginalHeight(w.getOriginalHeight() + height);
 		}
 
-		revalidate(wUniverse);
+		w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE);
+		if (w != null)
+		{
+			w.setOriginalY(w.getOriginalY() + height);
+		}
+
+		w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT);
+		if (w != null)
+		{
+			w.setOriginalHeight(w.getOriginalHeight() + height);
+		}
+
+		w = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT);
+		if (w != null)
+		{
+			// flavour text
+			w.setText("<col=FF0000>Rip and tear, until it is done.</col>");
+		}
+
+		revalidate(root);
 	}
 
 	private static void revalidate(final Widget parent)
