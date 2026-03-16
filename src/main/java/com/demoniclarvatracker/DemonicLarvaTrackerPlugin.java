@@ -51,6 +51,7 @@ import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.FakeXpDrop;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GraphicChanged;
@@ -67,6 +68,7 @@ import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
@@ -76,6 +78,7 @@ import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
@@ -138,6 +141,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 	private long lastTickNano;
 
+	private boolean lootSoundPlayed;
 	private boolean enabled;
 
 	@Override
@@ -156,6 +160,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		assert client.isClientThread();
 
 		enabled = true;
+		lootSoundPlayed = false;
 
 		renderCallbackManager.register(this);
 
@@ -172,6 +177,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	protected void shutDown()
 	{
 		enabled = false;
+		lootSoundPlayed = false;
 
 		renderCallbackManager.unregister(this);
 
@@ -222,6 +228,25 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	DemonicLarvaTrackerConfig provideConfig(final ConfigManager configManager)
 	{
 		return configManager.getConfig(DemonicLarvaTrackerConfig.class);
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event)
+	{
+		if (!event.getGroup().equals(DemonicLarvaTrackerConfig.CONFIG_GROUP))
+		{
+			return;
+		}
+
+		switch (event.getKey())
+		{
+			case DemonicLarvaTrackerConfig.CONFIG_KEY_LOOT_SOUND_ENABLED:
+			case DemonicLarvaTrackerConfig.CONFIG_KEY_LOOT_SOUND_ID:
+				clientThread.invokeLater(() -> playLootSound(true));
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Subscribe
@@ -278,6 +303,20 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		}
 
 		npc.clearSpotAnims();
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(final GameObjectSpawned event)
+	{
+		if (!enabled)
+		{
+			return;
+		}
+
+		if (event.getGameObject().getId() == ObjectID.DOM_DESCEND_HOLE_UNIQUE)
+		{
+			playLootSound(false);
+		}
 	}
 
 	@Subscribe
@@ -1119,5 +1158,43 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		final var end = text.indexOf(" GP");
 		final var value = text.substring(start, end).replace(",", "");
 		return Integer.parseInt(value);
+	}
+
+	private void playLootSound(final boolean force)
+	{
+		assert client.isClientThread();
+
+		if (!config.lootSoundEnabled())
+		{
+			return;
+		}
+
+		if (lootSoundPlayed && !force)
+		{
+			// Prevent retriggering sound when delving deeper
+			return;
+		}
+
+		final var soundId = config.lootSoundId();
+		if (soundId < 0)
+		{
+			return;
+		}
+
+		final var effectVolume = config.lootSoundVolume();
+		if (effectVolume <= 0)
+		{
+			return;
+		}
+
+		if (!force)
+		{
+			lootSoundPlayed = true;
+		}
+
+		final var userVolume = client.getPreferences().getSoundEffectVolume();
+		client.getPreferences().setSoundEffectVolume(effectVolume);
+		client.playSoundEffect(soundId, effectVolume);
+		client.getPreferences().setSoundEffectVolume(userVolume);
 	}
 }

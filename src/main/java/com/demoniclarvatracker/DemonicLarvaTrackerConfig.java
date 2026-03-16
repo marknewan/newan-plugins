@@ -890,6 +890,50 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return true;
 	}
 
+	String CONFIG_KEY_LOOT_SOUND_ENABLED = "lootSoundEnabled";
+
+	@ConfigItem(
+		name = "Unique Loot Sound",
+		description = "Play a sound effect on unique loot.",
+		position = 2,
+		keyName = CONFIG_KEY_LOOT_SOUND_ENABLED,
+		section = SECTION_EXTRA
+	)
+	default boolean lootSoundEnabled()
+	{
+		return true;
+	}
+
+	String CONFIG_KEY_LOOT_SOUND_ID = "lootSoundId";
+
+	@Range(min = -1)
+	@ConfigItem(
+		name = "Sound ID",
+		description = "The ID of the sound effect to play." +
+			"<br>Default value = 10224.",
+		position = 3,
+		keyName = CONFIG_KEY_LOOT_SOUND_ID,
+		section = SECTION_EXTRA
+	)
+	default int lootSoundId()
+	{
+		return 10224;
+	}
+
+	@Range(max = 100)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		name = "Sound Volume",
+		description = "The volume of the sound effect to play.",
+		position = 4,
+		keyName = "lootSoundVolume",
+		section = SECTION_EXTRA
+	)
+	default int lootSoundVolume()
+	{
+		return 50;
+	}
+
 	// Advanced
 
 	@Range(min = 2, max = 10)
