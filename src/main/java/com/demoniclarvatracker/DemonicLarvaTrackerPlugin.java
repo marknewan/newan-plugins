@@ -44,6 +44,7 @@ import net.runelite.api.Client;
 import net.runelite.api.EnumID;
 import net.runelite.api.GameState;
 import net.runelite.api.Hitsplat;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.NPC;
 import net.runelite.api.ParamID;
 import net.runelite.api.Renderable;
@@ -64,6 +65,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.AnimationID;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
@@ -74,6 +76,7 @@ import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -112,6 +115,8 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	private InfoBoxManager infoBoxManager;
 	@Inject
 	private SpriteManager spriteManager;
+	@Inject
+	private ItemManager itemManager;
 	@Inject
 	private RenderCallbackManager renderCallbackManager;
 
@@ -548,7 +553,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	public void onScriptPreFired(final ScriptPreFired event)
 	{
 		// https://github.com/runelite/cs2-scripts/blob/master/scripts/%5Bclientscript%2Cscript7931%5D.cs2
-		if (!enabled || event.getScriptId() != 7931 || !config.expandLootUI())
+		if (!enabled || event.getScriptId() != 7931)
 		{
 			return;
 		}
@@ -567,7 +572,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
-		expandLootUI(container.count(), claimed);
+		if (config.expandLootUI())
+		{
+			expandLootUI(container.count(), claimed);
+		}
+
+		if (config.adjustLootValue())
+		{
+			adjustLootValue(container);
+		}
 	}
 
 	@Subscribe
@@ -1057,5 +1070,54 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 				}
 			}
 		}
+	}
+
+	private void adjustLootValue(final ItemContainer itemContainer)
+	{
+		if (itemContainer == null)
+		{
+			return;
+		}
+
+		var adjustment = 0;
+
+		final var bone = itemContainer.count(ItemID.SUN_KISSED_BONE);
+		adjustment += bone * -8_000;
+
+		final var seed = itemContainer.count(ItemID.SPIRIT_TREE_SEED);
+		adjustment += seed * -140_000;
+
+		final var cloth = itemContainer.count(ItemID.MOKHAIOTL_CLOTH);
+		if (cloth > 0)
+		{
+			final var gauntlet = itemManager.getItemPriceWithSource(ItemID.CONFLICTION_GAUNTLETS, true);
+			final var bracelet = itemManager.getItemPriceWithSource(ItemID.ZENYTE_BRACELET_ENCHANTED, true);
+			final var tears = itemManager.getItemPriceWithSource(ItemID.DEMON_TEAR, true);
+			adjustment += cloth * (gauntlet - bracelet - (tears * 10_000));
+		}
+
+		if (adjustment == 0)
+		{
+			return;
+		}
+
+		final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_VALUE);
+		if (w == null)
+		{
+			return;
+		}
+
+		var total = parseLootTotal(w.getText());
+		total += adjustment;
+
+		w.setText(String.format("GE Value: %,d GP", total));
+	}
+
+	private static int parseLootTotal(final String text)
+	{
+		final var start = "Value: ".length();
+		final var end = text.indexOf(" GP");
+		final var value = text.substring(start, end).replace(",", "");
+		return Integer.parseInt(value);
 	}
 }
