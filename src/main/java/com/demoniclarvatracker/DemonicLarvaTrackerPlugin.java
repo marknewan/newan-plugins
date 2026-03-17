@@ -573,13 +573,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
-		if (event.getVarpId() == VarPlayerID.COM_MODE ||
-			event.getVarbitId() == VarbitID.COMBAT_WEAPON_CATEGORY ||
-			event.getVarbitId() == VarbitID.AUTOCAST_DEFMODE)
+		final var varpId = event.getVarpId();
+		final var varbitId = event.getVarbitId();
+
+		if (varpId == VarPlayerID.COM_MODE ||
+			varbitId == VarbitID.COMBAT_WEAPON_CATEGORY ||
+			varbitId == VarbitID.AUTOCAST_DEFMODE)
 		{
 			initAttackStyles();
 		}
-		else if (event.getVarbitId() == VarbitID.DOM_MISSED_ORBS)
+		else if (varbitId == VarbitID.DOM_MISSED_ORBS)
 		{
 			if (counter != null)
 			{
@@ -986,20 +989,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		return (int) Math.round(damage);
 	}
 
-	private static boolean isLarva(final NPC npc)
-	{
-		if (npc == null)
-		{
-			return false;
-		}
-
-		final var id = npc.getId();
-
-		return id == NpcID.DOM_DEMONIC_ENERGY || id == NpcID.DOM_DEMONIC_ENERGY_RANGE ||
-			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE ||
-			id == NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE || id == NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE;
-	}
-
 	private void expandLootUI(final int itemCount, final boolean claimed)
 	{
 		final var itemsPerRow = 8;
@@ -1077,40 +1066,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		revalidate(root);
 	}
 
-	private static void revalidate(final Widget parent)
-	{
-		if (parent == null)
-		{
-			return;
-		}
-
-		parent.revalidate();
-
-		var children = parent.getStaticChildren();
-		if (children != null)
-		{
-			for (final var c : children)
-			{
-				if (c != null)
-				{
-					revalidate(c);
-				}
-			}
-		}
-
-		children = parent.getDynamicChildren();
-		if (children != null)
-		{
-			for (final var c : children)
-			{
-				if (c != null)
-				{
-					revalidate(c);
-				}
-			}
-		}
-	}
-
 	private void adjustLootValue(final ItemContainer itemContainer)
 	{
 		if (itemContainer == null)
@@ -1152,14 +1107,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		w.setText(String.format("GE Value: %,d GP", total));
 	}
 
-	private static int parseLootTotal(final String text)
-	{
-		final var start = "Value: ".length();
-		final var end = text.indexOf(" GP");
-		final var value = text.substring(start, end).replace(",", "");
-		return Integer.parseInt(value);
-	}
-
 	private void playLootSound(final boolean force)
 	{
 		assert client.isClientThread();
@@ -1196,5 +1143,61 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		client.getPreferences().setSoundEffectVolume(effectVolume);
 		client.playSoundEffect(soundId, effectVolume);
 		client.getPreferences().setSoundEffectVolume(userVolume);
+	}
+
+	private static boolean isLarva(final NPC npc)
+	{
+		if (npc == null)
+		{
+			return false;
+		}
+
+		final var id = npc.getId();
+
+		return id == NpcID.DOM_DEMONIC_ENERGY || id == NpcID.DOM_DEMONIC_ENERGY_RANGE ||
+			id == NpcID.DOM_DEMONIC_ENERGY_MAGE || id == NpcID.DOM_DEMONIC_ENERGY_MELEE ||
+			id == NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE || id == NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE;
+	}
+
+	private static int parseLootTotal(final String text)
+	{
+		final var start = "Value: ".length();
+		final var end = text.indexOf(" GP");
+		final var value = text.substring(start, end).replace(",", "");
+		return Integer.parseInt(value);
+	}
+
+	private static void revalidate(final Widget parent)
+	{
+		if (parent == null)
+		{
+			return;
+		}
+
+		parent.revalidate();
+
+		var children = parent.getStaticChildren();
+		if (children != null)
+		{
+			for (final var c : children)
+			{
+				if (c != null)
+				{
+					revalidate(c);
+				}
+			}
+		}
+
+		children = parent.getDynamicChildren();
+		if (children != null)
+		{
+			for (final var c : children)
+			{
+				if (c != null)
+				{
+					revalidate(c);
+				}
+			}
+		}
 	}
 }
