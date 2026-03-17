@@ -906,7 +906,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	String CONFIG_KEY_LOOT_SOUND_ID = "lootSoundId";
 
-	@Range(min = -1)
 	@ConfigItem(
 		name = "Sound ID",
 		description = "The ID of the sound effect to play." +

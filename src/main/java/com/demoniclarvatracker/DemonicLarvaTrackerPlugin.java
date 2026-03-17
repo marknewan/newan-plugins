@@ -73,6 +73,8 @@ import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetPositionMode;
+import net.runelite.api.widgets.WidgetSizeMode;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
@@ -1003,24 +1005,11 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS);
 			if (w != null)
 			{
+				// prevent clipping of bottom sprites
 				w.setOriginalHeight(w.getOriginalHeight() - 2);
 				w.revalidate();
 			}
 			return;
-		}
-
-		// item sprite height
-		var height = 32;
-
-		// max item count is 27
-		if (itemCount > (itemsPerRow * 3))
-		{
-			height *= 2;
-			if (claimed)
-			{
-				// padding above value total
-				height += 8;
-			}
 		}
 
 		final var root = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
@@ -1031,33 +1020,38 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 		// revalidating the default root changes its size for some reason
 		// so make its position and dimensions absolute
-		root.setXPositionMode(0);
-		root.setYPositionMode(0);
-		root.setWidthMode(0);
-		root.setHeightMode(0);
+		root.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+		root.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+		root.setWidthMode(WidgetSizeMode.ABSOLUTE);
+		root.setHeightMode(WidgetSizeMode.ABSOLUTE);
 		root.setOriginalWidth(root.getWidth());
 		root.setOriginalHeight(root.getHeight());
+
+		var rowHeight = 36;
+		if (itemCount > (itemsPerRow * 3))
+		{
+			rowHeight *= 2;
+			if (!claimed)
+			{
+				// constrain to parent bounds
+				rowHeight -= 8;
+			}
+		}
 
 		var w = client.getWidget(InterfaceID.DomEndLevelUi.WINDOW);
 		if (w != null)
 		{
-			w.setOriginalHeight(w.getOriginalHeight() + height);
+			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
 		}
-
-		w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE);
-		if (w != null)
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE)) != null)
 		{
-			w.setOriginalY(w.getOriginalY() + height);
+			w.setOriginalY(w.getOriginalY() + rowHeight);
 		}
-
-		w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT);
-		if (w != null)
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT)) != null)
 		{
-			w.setOriginalHeight(w.getOriginalHeight() + height);
+			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
 		}
-
-		w = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT);
-		if (w != null)
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT)) != null)
 		{
 			// flavour text
 			w.setText("<col=FF0000>Rip and tear, until it is done.</col>");
@@ -1073,13 +1067,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
+		final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_VALUE);
+		if (w == null || w.isHidden())
+		{
+			return;
+		}
+
 		var adjustment = 0;
-
-		final var bone = itemContainer.count(ItemID.SUN_KISSED_BONE);
-		adjustment += bone * -8_000;
-
-		final var seed = itemContainer.count(ItemID.SPIRIT_TREE_SEED);
-		adjustment += seed * -140_000;
+		adjustment -= itemContainer.count(ItemID.SUN_KISSED_BONE) * 8_000;
+		adjustment -= itemContainer.count(ItemID.SPIRIT_TREE_SEED) * 140_000;
 
 		final var cloth = itemContainer.count(ItemID.MOKHAIOTL_CLOTH);
 		if (cloth > 0)
@@ -1095,16 +1091,10 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
-		final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_VALUE);
-		if (w == null)
-		{
-			return;
-		}
+		var value = parseLootValue(w.getText());
+		value += adjustment;
 
-		var total = parseLootTotal(w.getText());
-		total += adjustment;
-
-		w.setText(String.format("GE Value: %,d GP", total));
+		w.setText(String.format("GE Value: %,d GP", value));
 	}
 
 	private void playLootSound(final boolean force)
@@ -1112,18 +1102,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		assert client.isClientThread();
 
 		if (!config.lootSoundEnabled())
-		{
-			return;
-		}
-
-		if (lootSoundPlayed && !force)
-		{
-			// Prevent retriggering sound when delving deeper
-			return;
-		}
-
-		final var soundId = config.lootSoundId();
-		if (soundId < 0)
 		{
 			return;
 		}
@@ -1136,12 +1114,17 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 		if (!force)
 		{
+			if (lootSoundPlayed)
+			{
+				// Prevent retriggering sound when delving deeper
+				return;
+			}
 			lootSoundPlayed = true;
 		}
 
 		final var userVolume = client.getPreferences().getSoundEffectVolume();
 		client.getPreferences().setSoundEffectVolume(effectVolume);
-		client.playSoundEffect(soundId, effectVolume);
+		client.playSoundEffect(config.lootSoundId(), effectVolume);
 		client.getPreferences().setSoundEffectVolume(userVolume);
 	}
 
@@ -1159,8 +1142,13 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			id == NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE || id == NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE;
 	}
 
-	private static int parseLootTotal(final String text)
+	private static int parseLootValue(final String text)
 	{
+		if (text == null || text.isBlank())
+		{
+			return 0;
+		}
+
 		final var start = "Value: ".length();
 		final var end = text.indexOf(" GP");
 		final var value = text.substring(start, end).replace(",", "");

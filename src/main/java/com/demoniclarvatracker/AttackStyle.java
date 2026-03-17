@@ -34,5 +34,5 @@ enum AttackStyle
 	LONGRANGE,
 	CASTING,
 	DEFENSIVE_CASTING,
-	OTHER;
+	OTHER
 }
