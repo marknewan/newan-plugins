@@ -597,7 +597,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	public void onScriptPreFired(final ScriptPreFired event)
 	{
 		// https://github.com/runelite/cs2-scripts/blob/master/scripts/%5Bclientscript%2Cscript7931%5D.cs2
-		if (!enabled || event.getScriptId() != 7931)
+		if (event.getScriptId() != 7931)
 		{
 			return;
 		}
