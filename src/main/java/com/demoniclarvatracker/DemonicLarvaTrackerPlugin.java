@@ -608,7 +608,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
-		final var claimed = (int) scriptEvent.getArguments()[2] == 1;
+		final var claimed = (int) scriptEvent.getArguments()[2] != 0;
 		final var id = claimed ? InventoryID.DOM_LOOTPILE : InventoryID.DOM_LOOTPILE_DURING;
 		final var container = client.getItemContainer(id);
 		if (container == null)
