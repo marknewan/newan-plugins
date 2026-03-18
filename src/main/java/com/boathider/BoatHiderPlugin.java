@@ -275,7 +275,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 				return showRange;
 			}
 
-			if (id == 60722) // TODO: replace with gameval
+			if (id == ObjectID.SAILING_BALLISTIC_ATTRACTOR)
 			{
 				return showBallisticAttractor;
 			}
