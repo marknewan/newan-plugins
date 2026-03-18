@@ -1078,15 +1078,15 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		}
 
 		var adjustment = 0;
-		adjustment -= itemContainer.count(ItemID.SUN_KISSED_BONE) * 8_000;
+		adjustment -= itemContainer.count(ItemID.SUN_KISSED_BONE) * 96;
 		adjustment -= itemContainer.count(ItemID.SPIRIT_TREE_SEED) * 140_000;
 
 		final var cloth = itemContainer.count(ItemID.MOKHAIOTL_CLOTH);
 		if (cloth > 0)
 		{
-			final var gauntlet = itemManager.getItemPriceWithSource(ItemID.CONFLICTION_GAUNTLETS, true);
-			final var bracelet = itemManager.getItemPriceWithSource(ItemID.ZENYTE_BRACELET_ENCHANTED, true);
-			final var tears = itemManager.getItemPriceWithSource(ItemID.DEMON_TEAR, true);
+			final var gauntlet = itemManager.getItemPriceWithSource(ItemID.CONFLICTION_GAUNTLETS, false);
+			final var bracelet = itemManager.getItemPriceWithSource(ItemID.ZENYTE_BRACELET_ENCHANTED, false);
+			final var tears = itemManager.getItemPriceWithSource(ItemID.DEMON_TEAR, false);
 			adjustment += cloth * (gauntlet - bracelet - (tears * 10_000));
 		}
 
@@ -1098,7 +1098,7 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		var value = parseLootValue(w.getText());
 		value += adjustment;
 
-		w.setText(String.format("GE Value: %,d GP", value));
+		w.setText(String.format("Adj. Value: %,d GP", value));
 	}
 
 	private void playLootSound(final boolean force)
