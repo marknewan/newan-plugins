@@ -15,7 +15,10 @@ Features for demonic larva at the boss Doom of Mokhaiotl.
 * Absorbed larva infobox
 * Draw names above npcs
 * Remove spawn animation
-* Expand loot interface
+* Extra
+  * Expand loot interface
+  * Adjust loot value
+  * Play sound effect on unique loot
 
 ### Contribution
 
