@@ -158,10 +158,22 @@ public interface BoatHiderConfig extends Config
 	}
 
 	@ConfigItem(
+		name = "Hide Ballistic Attractor",
+		description = "",
+		keyName = "hideBallisticAttractor",
+		position = 10,
+		section = SECTION_DYNAMIC
+	)
+	default boolean hideBallisticAttractor()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		name = "Hide Trawling Net",
 		description = "",
 		keyName = "hideTrawlingNet",
-		position = 10,
+		position = 11,
 		section = SECTION_DYNAMIC
 	)
 	default boolean hideTrawlingNet()
@@ -173,7 +185,7 @@ public interface BoatHiderConfig extends Config
 		name = "Hide Fathom Stone/Pearl",
 		description = "",
 		keyName = "hideFathomStonePearl",
-		position = 11,
+		position = 12,
 		section = SECTION_DYNAMIC
 	)
 	default boolean hideFathomStonePearl()
@@ -185,7 +197,7 @@ public interface BoatHiderConfig extends Config
 		name = "Hide Anchor",
 		description = "",
 		keyName = "hideAnchor",
-		position = 12,
+		position = 13,
 		section = SECTION_DYNAMIC
 	)
 	default boolean hideAnchor()
@@ -307,7 +319,7 @@ public interface BoatHiderConfig extends Config
 
 	@ConfigItem(
 		name = "Hide Other Player Boats",
-		description = "",
+		description = "Hide other player's boats while still showing the players.",
 		keyName = "hideOtherPlayerBoats",
 		position = 0,
 		section = SECTION_MISCELLANEOUS

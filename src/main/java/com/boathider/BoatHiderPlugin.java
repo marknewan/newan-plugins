@@ -54,6 +54,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 	private boolean showFlag;
 	private boolean showSalvagingHook;
 	private boolean showCannon;
+	private boolean showBallisticAttractor;
 	private boolean showKeg;
 	private boolean showTrawlingNet;
 	private boolean showChumStation;
@@ -109,6 +110,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 		showFlag = !config.hideFlag();
 		showSalvagingHook = !config.hideSalvagingHook();
 		showCannon = !config.hideCannon();
+		showBallisticAttractor = !config.hideBallisticAttractor();
 		showKeg = !config.hideKeg();
 		showTrawlingNet = !config.hideTrawlingNet();
 		showChumStation = !config.hideChumStation();
@@ -271,6 +273,11 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 			if (id == ObjectID.SAILING_FACILITY_RANGE)
 			{
 				return showRange;
+			}
+
+			if (id == 60722) // TODO: replace with gameval
+			{
+				return showBallisticAttractor;
 			}
 
 			if (renderable instanceof DynamicObject || renderable instanceof Model)
