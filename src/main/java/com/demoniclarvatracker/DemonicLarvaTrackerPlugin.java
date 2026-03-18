@@ -1043,13 +1043,17 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		{
 			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
 		}
-		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE)) != null)
-		{
-			w.setOriginalY(w.getOriginalY() + rowHeight);
-		}
 		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT)) != null)
 		{
 			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS)) != null)
+		{
+			w.setOriginalHeight(w.getOriginalHeight() - 2);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE)) != null)
+		{
+			w.setOriginalY(w.getOriginalY() + rowHeight);
 		}
 		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT)) != null)
 		{
