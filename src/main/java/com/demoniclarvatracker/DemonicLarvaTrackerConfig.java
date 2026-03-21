@@ -866,9 +866,8 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@ConfigItem(
 		name = "Adjust Loot Value",
-		description = "Adjusts the total in the loot interface to show the GE value." +
-			"<br>Removes: Sunkissed-bones, Spirit seeds" +
-			"<br>Adds: Mokhaiotl cloth",
+		description = "Adjusts the total in the loot interface." +
+			"<br>Removes: Sunkissed-bones (96 gp), Spirit seeds (140k gp)",
 		position = 0,
 		keyName = "adjustLootValue",
 		section = SECTION_EXTRA
