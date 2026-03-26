@@ -44,6 +44,7 @@ import net.runelite.api.Client;
 import net.runelite.api.EnumID;
 import net.runelite.api.GameState;
 import net.runelite.api.Hitsplat;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.NPC;
 import net.runelite.api.ParamID;
 import net.runelite.api.Renderable;
@@ -581,6 +582,11 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 		{
 			expandLootUI(container.count(), claimed);
 		}
+
+		if (config.adjustLootValue())
+		{
+			adjustLootValue(container);
+		}
 	}
 
 	@Subscribe
@@ -1066,5 +1072,46 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 				}
 			}
 		}
+	}
+
+	private void adjustLootValue(final ItemContainer itemContainer)
+	{
+		if (itemContainer == null)
+		{
+			return;
+		}
+
+		final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_VALUE);
+		if (w == null || w.isHidden())
+		{
+			return;
+		}
+
+		var adjustment = 0;
+		adjustment -= itemContainer.count(ItemID.SUN_KISSED_BONE) * 96;
+		adjustment -= itemContainer.count(ItemID.SPIRIT_TREE_SEED) * 140_000;
+
+		if (adjustment == 0)
+		{
+			return;
+		}
+
+		var value = parseLootValue(w.getText());
+		value += adjustment;
+
+		w.setText(String.format("Adj. Value: %,d GP", value));
+	}
+
+	private static int parseLootValue(final String text)
+	{
+		if (text == null || text.isBlank())
+		{
+			return 0;
+		}
+
+		final var start = "Value: ".length();
+		final var end = text.indexOf(" GP");
+		final var value = text.substring(start, end).replace(",", "");
+		return Integer.parseInt(value);
 	}
 }

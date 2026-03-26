@@ -17,6 +17,7 @@ Features for demonic larva at the boss Doom of Mokhaiotl.
 * Remove spawn animation
 * Extra
     * Expand loot interface
+    * Adjust loot value
 
 ### Contribution
 

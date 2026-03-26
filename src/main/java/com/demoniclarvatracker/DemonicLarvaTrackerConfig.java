@@ -876,6 +876,19 @@ public interface DemonicLarvaTrackerConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		name = "Adjust Loot Value",
+		description = "Adjusts the total in the loot interface." +
+			"<br>Removes: Sunkissed-bones (96 gp), Spirit seeds (140k gp)",
+		position = 1,
+		keyName = "adjustLootValue",
+		section = SECTION_EXTRA
+	)
+	default boolean adjustLootValue()
+	{
+		return false;
+	}
+
 	// Advanced
 
 	@Range(min = 2, max = 10)
