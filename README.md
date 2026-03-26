@@ -18,6 +18,7 @@ Features for demonic larva at the boss Doom of Mokhaiotl.
 * Extra
     * Expand loot interface
     * Adjust loot value
+    * Unique loot sound
 
 ### Contribution
 
