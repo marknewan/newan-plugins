@@ -64,9 +64,17 @@ public interface DemonicLarvaTrackerConfig extends Config
 	String SECTION_MAGIC_LARVA = "magicLarva";
 
 	@ConfigSection(
-		name = "Advanced",
+		name = "Extra",
 		description = "",
 		position = 6,
+		closedByDefault = true
+	)
+	String SECTION_EXTRA = "extra";
+
+	@ConfigSection(
+		name = "Advanced",
+		description = "",
+		position = 7,
 		closedByDefault = true
 	)
 	String SECTION_ADVANCED = "advanced";
@@ -157,18 +165,6 @@ public interface DemonicLarvaTrackerConfig extends Config
 		section = SECTION_GENERAL
 	)
 	default boolean infoboxLarvaCounter()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		name = "Expand Loot UI",
-		description = "Expands the loot interface when necessary to show hidden items.",
-		position = 7,
-		keyName = "expandLootUI",
-		section = SECTION_GENERAL
-	)
-	default boolean expandLootUI()
 	{
 		return true;
 	}
@@ -864,6 +860,20 @@ public interface DemonicLarvaTrackerConfig extends Config
 	default String nameLabelMagic()
 	{
 		return "Mage";
+	}
+
+	// Extra
+
+	@ConfigItem(
+		name = "Expand Loot UI",
+		description = "Expands the loot interface when necessary to show hidden items.",
+		position = 0,
+		keyName = "expandLootUI",
+		section = SECTION_EXTRA
+	)
+	default boolean expandLootUI()
+	{
+		return true;
 	}
 
 	// Advanced

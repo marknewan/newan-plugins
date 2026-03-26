@@ -59,16 +59,20 @@ import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.AnimationID;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetPositionMode;
+import net.runelite.api.widgets.WidgetSizeMode;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
@@ -354,7 +358,13 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	@Subscribe()
 	private void onInteractingChanged(final InteractingChanged event)
 	{
-		if (!enabled || event.getSource() != client.getLocalPlayer())
+		if (!enabled)
+		{
+			return;
+		}
+
+		final var player = client.getLocalPlayer();
+		if (player == null || event.getSource() != player)
 		{
 			return;
 		}
@@ -545,12 +555,31 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 	}
 
 	@Subscribe
-	public void onScriptPostFired(final ScriptPostFired event)
+	public void onScriptPreFired(final ScriptPreFired event)
 	{
 		// https://github.com/runelite/cs2-scripts/blob/master/scripts/%5Bclientscript%2Cscript7931%5D.cs2
-		if (event.getScriptId() == 7931 && config.expandLootUI())
+		if (event.getScriptId() != 7931)
 		{
-			expandLootUI();
+			return;
+		}
+
+		final var scriptEvent = event.getScriptEvent();
+		if (scriptEvent == null)
+		{
+			return;
+		}
+
+		final var claimed = (int) scriptEvent.getArguments()[2] != 0;
+		final var id = claimed ? InventoryID.DOM_LOOTPILE : InventoryID.DOM_LOOTPILE_DURING;
+		final var container = client.getItemContainer(id);
+		if (container == null)
+		{
+			return;
+		}
+
+		if (config.expandLootUI())
+		{
+			expandLootUI(container.count(), claimed);
 		}
 	}
 
@@ -932,54 +961,77 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 			id == NpcID.DOM_DEMONIC_ENERGY_GIANT_RANGE || id == NpcID.DOM_DEMONIC_ENERGY_GIANT_MAGE;
 	}
 
-	private void expandLootUI()
+	private void expandLootUI(final int itemCount, final boolean claimed)
 	{
-		final var wUniverse = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
-		final var wWindow = client.getWidget(InterfaceID.DomEndLevelUi.WINDOW);
-		final var wLootSection = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT);
-		final var wLootContents = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS);
-		final var wDelveSection = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE);
-		final var wDelveHint = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT);
-		if (wUniverse == null ||
-			wWindow == null ||
-			wLootSection == null ||
-			wLootContents == null ||
-			wDelveSection == null ||
-			wDelveHint == null)
+		final var itemsPerRow = 8;
+
+		if (itemCount <= itemsPerRow)
 		{
 			return;
 		}
 
-		final var hiddenItems = Arrays.stream(wLootContents.getDynamicChildren())
-			.skip(16)
-			.anyMatch(c -> c != null && c.getItemId() != ItemID.BLANKOBJECT);
-		if (!hiddenItems)
+		if (itemCount <= (itemsPerRow * 2))
+		{
+			final var w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS);
+			if (w != null)
+			{
+				// prevent clipping of bottom sprites
+				w.setOriginalHeight(w.getOriginalHeight() - 2);
+				w.revalidate();
+			}
+			return;
+		}
+
+		final var root = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
+		if (root == null)
 		{
 			return;
 		}
 
-		wUniverse.setXPositionMode(0);
-		wUniverse.setYPositionMode(0);
-		wUniverse.setWidthMode(0);
-		wUniverse.setHeightMode(0);
-		wUniverse.setOriginalWidth(512);
-		wWindow.setYPositionMode(0);
-		wLootSection.setOriginalHeight(215);
+		// revalidating the default root changes its size for some reason
+		// so make its position and dimensions absolute
+		root.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+		root.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+		root.setWidthMode(WidgetSizeMode.ABSOLUTE);
+		root.setHeightMode(WidgetSizeMode.ABSOLUTE);
+		root.setOriginalWidth(root.getWidth());
+		root.setOriginalHeight(root.getHeight());
 
-		if (wDelveSection.isHidden() || wDelveHint.isHidden())
+		var rowHeight = 36;
+		if (itemCount > (itemsPerRow * 3))
 		{
-			wUniverse.setOriginalHeight(270);
-			wWindow.setOriginalHeight(270);
-		}
-		else
-		{
-			wUniverse.setOriginalHeight(334);
-			wWindow.setOriginalHeight(334);
-			wDelveSection.setOriginalY(225);
-			wDelveHint.setText("<col=FF0000>Rip and tear, until it is done.</col>");
+			rowHeight *= 2;
+			if (!claimed)
+			{
+				// constrain to parent bounds
+				rowHeight -= 8;
+			}
 		}
 
-		revalidate(wUniverse);
+		var w = client.getWidget(InterfaceID.DomEndLevelUi.WINDOW);
+		if (w != null)
+		{
+			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_LOOT)) != null)
+		{
+			w.setOriginalHeight(w.getOriginalHeight() + rowHeight);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.LOOT_CONTENTS)) != null)
+		{
+			w.setOriginalHeight(w.getOriginalHeight() - 2);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.SECTION_DELVE)) != null)
+		{
+			w.setOriginalY(w.getOriginalY() + rowHeight);
+		}
+		if ((w = client.getWidget(InterfaceID.DomEndLevelUi.DELVE_HINT)) != null)
+		{
+			// flavour text
+			w.setText("<col=FF0000>Rip and tear, until it is done.</col>");
+		}
+
+		revalidate(root);
 	}
 
 	private static void revalidate(final Widget parent)
