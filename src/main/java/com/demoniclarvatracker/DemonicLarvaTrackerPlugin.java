@@ -1008,6 +1008,16 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 
 	private void expandLootUI(final int itemCount, final boolean claimed)
 	{
+		final var root = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
+		if (root == null || !root.getText().isEmpty())
+		{
+			return;
+		}
+
+		// script is rerun when an item slot is withdrawn
+		// use text field as a marker to check if ui has already been resized
+		root.setText("expanded");
+
 		final var itemsPerRow = 8;
 
 		if (itemCount <= itemsPerRow)
@@ -1024,12 +1034,6 @@ public class DemonicLarvaTrackerPlugin extends Plugin implements RenderCallback
 				w.setOriginalHeight(w.getOriginalHeight() - 2);
 				w.revalidate();
 			}
-			return;
-		}
-
-		final var root = client.getWidget(InterfaceID.DomEndLevelUi.UNIVERSE);
-		if (root == null)
-		{
 			return;
 		}
 
