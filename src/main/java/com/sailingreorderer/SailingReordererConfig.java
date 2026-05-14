@@ -20,4 +20,15 @@ public interface SailingReordererConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		name = "Expand UI",
+		description = "Expands the viewport to see more facilities without scrolling.",
+		keyName = "expandUI",
+		position = 1
+	)
+	default boolean expandUI()
+	{
+		return false;
+	}
 }

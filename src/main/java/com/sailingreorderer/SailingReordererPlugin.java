@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2026, marknewan <https://github.com/marknewan>
+ * Copyright (c) 2025, Tyler Stewart
  * Copyright (c) 2018, 2023, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
@@ -42,6 +43,7 @@ import net.runelite.api.Client;
 import net.runelite.api.FontID;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuAction;
+import net.runelite.api.ScriptID;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPostFired;
@@ -51,6 +53,7 @@ import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetPositionMode;
 import net.runelite.api.widgets.WidgetSizeMode;
 import net.runelite.api.widgets.WidgetTextAlignment;
 import net.runelite.api.widgets.WidgetType;
@@ -127,6 +130,8 @@ public class SailingReordererPlugin extends Plugin
 
 	private int rowBaseY = ROW_BASE_Y_DEFAULT;
 
+	private boolean expandUI;
+
 	private boolean reordering;
 
 	@Provides
@@ -158,6 +163,7 @@ public class SailingReordererPlugin extends Plugin
 	{
 		customRowOrder = null;
 		rowBaseY = ROW_BASE_Y_DEFAULT;
+		expandUI = false;
 		reordering = false;
 		removeTabMenus();
 		clientThread.invokeLater(this::redrawSidePanel);
@@ -195,6 +201,7 @@ public class SailingReordererPlugin extends Plugin
 		if (e.getScriptId() == 8729)
 		{
 			reorderSidePanel();
+			expandUI();
 		}
 	}
 
@@ -647,6 +654,7 @@ public class SailingReordererPlugin extends Plugin
 	private void updateConfig()
 	{
 		rowBaseY = config.defaultSteeringButton() ? ROW_BASE_Y_DEFAULT : ROW_BASE_Y_EXPANDED;
+		expandUI = config.expandUI();
 	}
 
 	private void saveCustomRowOrder()
@@ -692,5 +700,349 @@ public class SailingReordererPlugin extends Plugin
 	private static String configKey(final int boatSlot)
 	{
 		return SailingReordererConfig.CONFIG_PREFIX_BOAT + boatSlot;
+	}
+
+	private void expandUI()
+	{
+		assert client.isClientThread();
+
+		if (!expandUI || !isSailingSidePanelOpen() || !isOnPlayerBoat() || isInShipyard())
+		{
+			return;
+		}
+
+		var w = client.getWidget(InterfaceID.SailingSidepanel.BOAT_NAME);
+		if (w != null)
+		{
+			w.setHidden(false);
+			w.setOriginalY(0);
+			w.setOriginalX(28);
+			w.setWidthMode(WidgetSizeMode.MINUS);
+			w.setOriginalWidth(30);
+			w.setHeightMode(WidgetSizeMode.ABSOLUTE);
+			w.setOriginalHeight(13);
+			w.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+			w.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+			w.revalidate();
+
+			final var c = w.getChild(0);
+			if (c != null)
+			{
+				c.setOriginalY(0);
+				c.setOriginalX(0);
+				c.setWidthMode(WidgetSizeMode.MINUS);
+				c.setOriginalWidth(0);
+				c.setHeightMode(WidgetSizeMode.MINUS);
+				c.setOriginalHeight(0);
+				c.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+				c.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+				c.revalidate();
+			}
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.HEALTH_BAR);
+		if (w != null)
+		{
+			w.setHidden(false);
+			w.setOriginalY(13);
+			w.setOriginalX(28);
+			w.setWidthMode(WidgetSizeMode.MINUS);
+			w.setOriginalWidth(30);
+			w.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+			w.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+			w.revalidate();
+
+			var c = w.getChild(1);
+			if (c != null)
+			{
+				c.setWidthMode(WidgetSizeMode.MINUS).setOriginalWidth(8);
+			}
+
+			c = w.getChild(2);
+			if (c != null)
+			{
+				c.setXPositionMode(WidgetPositionMode.ABSOLUTE_RIGHT).setOriginalX(0);
+			}
+
+			c = w.getChild(4);
+			if (c != null)
+			{
+				c.setWidthMode(WidgetSizeMode.MINUS).setOriginalWidth(8);
+			}
+
+			c = w.getChild(5);
+			if (c != null)
+			{
+				c.setXPositionMode(WidgetPositionMode.ABSOLUTE_RIGHT).setOriginalX(0);
+			}
+
+			c = w.getChild(7);
+			if (c != null)
+			{
+				c.setWidthMode(WidgetSizeMode.MINUS).setOriginalWidth(8);
+			}
+
+			c = w.getChild(8);
+			if (c != null)
+			{
+				c.setXPositionMode(WidgetPositionMode.ABSOLUTE_RIGHT).setOriginalX(0);
+			}
+
+			c = w.getChild(12);
+			if (c == null)
+			{
+				c = w.getChild(9);
+			}
+			if (c != null)
+			{
+				c.setWidthMode(WidgetSizeMode.MINUS).setOriginalWidth(0);
+			}
+
+			for (final var child : w.getDynamicChildren())
+			{
+				if (child != null)
+				{
+					child.revalidate();
+				}
+			}
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.TABS);
+		if (w != null)
+		{
+			w.setOriginalY(28);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.CONTENTS_LAYER);
+		if (w != null)
+		{
+			w.setOriginalY(2);
+			w.setOriginalHeight(210);
+			w.setOriginalWidth(4);
+			w.setOriginalX(2);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.TAB_TITLE);
+		if (w != null)
+		{
+			w.setHidden(client.getVarbitValue(VarbitID.SAILING_SIDEPANEL_CREW_ASSIGNATION) == 0);
+		}
+
+		// Facilities
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.FACILITIES_CONTENT_CONTAINER);
+		if (w != null)
+		{
+			w.setOriginalY(2);
+			w.setOriginalHeight(2);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.FACILITIES_CONTENT);
+		if (w != null)
+		{
+			w.revalidate();
+
+			for (final var c : w.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var facScrollable = client.getWidget(InterfaceID.SailingSidepanel.FACILITIES_SCROLLABLE);
+		if (facScrollable != null)
+		{
+			facScrollable.revalidate();
+
+			for (final var c : facScrollable.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var facScrollbar = client.getWidget(InterfaceID.SailingSidepanel.FACILITIES_SCROLLBAR);
+		if (facScrollbar != null)
+		{
+			facScrollbar.revalidate();
+
+			for (final var c : facScrollbar.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.FACILITIES_DIVIDER);
+		if (w != null)
+		{
+			w.setOriginalX(62);
+			w.revalidate();
+
+			for (final var c : w.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		if (facScrollable != null && facScrollbar != null)
+		{
+			updateScrollbar(facScrollbar.getId(), facScrollable.getId());
+		}
+
+		// Stats
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.STATS_CONTENT_CONTAINER);
+		if (w != null)
+		{
+			w.setOriginalY(2);
+			w.setOriginalHeight(2);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.STATS_CONTENT);
+		if (w != null)
+		{
+			w.revalidate();
+
+			for (final var c : w.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var statsScrollable = client.getWidget(InterfaceID.SailingSidepanel.STATS_SCROLLABLE);
+		if (statsScrollable != null)
+		{
+			statsScrollable.revalidate();
+
+			for (final var c : statsScrollable.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var statsScrollbar = client.getWidget(InterfaceID.SailingSidepanel.STATS_SCROLLBAR);
+		if (statsScrollbar != null)
+		{
+			statsScrollbar.revalidate();
+
+			for (final var c : statsScrollbar.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		if (statsScrollable != null && statsScrollbar != null)
+		{
+			updateScrollbar(statsScrollbar.getId(), statsScrollable.getId());
+		}
+
+		// Crew
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.CREW_CONTENT_CONTAINER);
+		if (w != null)
+		{
+			w.setOriginalY(2);
+			w.setOriginalHeight(2);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.CREW_CAPACITY_TEXT);
+		if (w != null)
+		{
+			w.setOriginalY(0);
+			w.setOriginalX(0);
+			w.setYPositionMode(WidgetPositionMode.ABSOLUTE_BOTTOM);
+			w.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+			w.revalidate();
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.CREW_CONTENT);
+		if (w != null)
+		{
+			w.revalidate();
+
+			for (final var c : w.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var crewScrollable = client.getWidget(InterfaceID.SailingSidepanel.CREW_SCROLLABLE);
+		if (crewScrollable != null)
+		{
+			crewScrollable.revalidate();
+
+			for (final var c : crewScrollable.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		final var crewScrollbar = client.getWidget(InterfaceID.SailingSidepanel.CREW_SCROLLBAR);
+		if (crewScrollbar != null)
+		{
+			crewScrollbar.revalidate();
+
+			for (final var c : crewScrollbar.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+
+		if (crewScrollable != null && crewScrollbar != null)
+		{
+			updateScrollbar(crewScrollbar.getId(), crewScrollable.getId());
+		}
+
+		w = client.getWidget(InterfaceID.SailingSidepanel.CREW_ROWS);
+		if (w != null)
+		{
+			w.revalidate();
+
+			for (final var c : w.getDynamicChildren())
+			{
+				if (c != null)
+				{
+					c.revalidate();
+				}
+			}
+		}
+	}
+
+	private void updateScrollbar(final int scrollbarWidgetId, final int scrollableWidgetId)
+	{
+		clientThread.invokeLater(() -> client.runScript(ScriptID.UPDATE_SCROLLBAR, scrollbarWidgetId, scrollableWidgetId, 0));
 	}
 }
