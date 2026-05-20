@@ -205,6 +205,18 @@ public interface BoatHiderConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		name = "Hide Bosun's Workbench",
+		description = "",
+		keyName = "hideBosunsWorkbench",
+		position = 14,
+		section = SECTION_DYNAMIC
+	)
+	default boolean hideBosunsWorkbench()
+	{
+		return false;
+	}
+
 	// Static
 
 	@ConfigItem(

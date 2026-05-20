@@ -10,6 +10,37 @@ class BoatID
 	final Set<Integer> WORLD_ENTITY_TYPE_BOAT = Set.of(1, 2, 3);
 
 	final Set<Integer> SAIL_IDS = Set.of(
+		// TODO replace with gamevals
+		29506,
+		29507,
+		29508,
+		29509,
+		29510,
+		29511,
+		29512,
+		29513,
+		29514,
+		29515,
+		29516,
+		29517,
+		29518,
+		29519,
+		29520,
+		29521,
+		29522,
+		29523,
+		29524,
+		29525,
+		29526,
+		29527,
+		29528,
+		29529,
+		29530,
+		29531,
+		29532,
+		29533,
+		29534,
+		29535,
 		ObjectID.SAILING_BOAT_SAIL_KANDARIN_1X3_WOOD,
 		ObjectID.SAILING_BOAT_SAIL_KANDARIN_2X5_WOOD,
 		ObjectID.SAILING_BOAT_SAIL_KANDARIN_3X8_WOOD,
@@ -424,5 +455,16 @@ class BoatID
 		ObjectID.SAILING_ANCHOR_LOWERED_2X5,
 		ObjectID.SAILING_ANCHOR_RAISED_3X8,
 		ObjectID.SAILING_ANCHOR_LOWERED_3X8
+	);
+
+	final Set<Integer> BOSUNS_WORKBENCH_IDS = Set.of(
+		// TODO replace with gamevals
+		29538,
+		29539,
+		29540,
+		29541,
+		29542,
+		29543,
+		29544
 	);
 }

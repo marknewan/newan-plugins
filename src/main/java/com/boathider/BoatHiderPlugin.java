@@ -61,6 +61,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 	private boolean showFathomStonePearl;
 	private boolean showAnchor;
 	private boolean showRange;
+	private boolean showBosunsWorkbench;
 	private boolean showOtherPlayerBoat;
 	private boolean showOther;
 
@@ -117,6 +118,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 		showFathomStonePearl = !config.hideFathomStonePearl();
 		showAnchor = !config.hideAnchor();
 		showRange = !config.hideRange();
+		showBosunsWorkbench = !config.hideBosunsWorkbench();
 		showOtherPlayerBoat = !config.hideOtherPlayerBoat();
 		showOther = !config.hideOther();
 	}
@@ -268,6 +270,11 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 			if (BoatID.ANCHOR_IDS.contains(id))
 			{
 				return showAnchor;
+			}
+
+			if (BoatID.BOSUNS_WORKBENCH_IDS.contains(id))
+			{
+				return showBosunsWorkbench;
 			}
 
 			if (id == ObjectID.SAILING_FACILITY_RANGE)
