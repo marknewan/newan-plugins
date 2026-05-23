@@ -50,6 +50,7 @@ import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.SpriteID;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
@@ -375,16 +376,19 @@ public class SailingReordererPlugin extends Plugin
 			alignSteerAssignButton(clickLayer.getChildren(), rows.getChildren());
 		}
 
-		// first-run or facilities changed
 		final var rowCount = (rows.getOriginalHeight() - rowBaseY) / ROW_HEIGHT;
-		if (customRowOrder == null || customRowOrder.length != rowCount)
+
+		if (customRowOrder == null || (reordering && customRowOrder.length != rowCount))
 		{
 			customRowOrder = IntStream.range(0, rowCount).toArray();
 		}
 
-		reorderRows(rows.getChildren());
-		reorderRows(clickLayer.getChildren());
-		setMarker();
+		if (customRowOrder.length == rowCount)
+		{
+			reorderRows(rows.getChildren());
+			reorderRows(clickLayer.getChildren());
+			setMarker();
+		}
 
 		if (reordering)
 		{
@@ -551,8 +555,8 @@ public class SailingReordererPlugin extends Plugin
 
 	private boolean isSailingSidePanelOpen()
 	{
-		final var w = client.getWidget(InterfaceID.SailingSidepanel.UNIVERSE);
-		return w != null && !w.isHidden();
+		return client.getVarcIntValue(VarClientID.TOPLEVEL_PANEL) == 0 &&
+			client.getVarbitValue(VarbitID.SAILING_SIDEPANEL_VISIBLE) == 1;
 	}
 
 	private boolean isFacilityTabOpen()
