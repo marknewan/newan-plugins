@@ -181,7 +181,9 @@ public class SailingReordererPlugin extends Plugin
 				configManager.unsetConfiguration(str[0], str[1]);
 			}
 		}
-		clientThread.invokeLater(this::reset);
+
+		customRowOrder = null;
+		clientThread.invokeLater(this::redrawSidePanel);
 	}
 
 	@Subscribe
@@ -647,6 +649,32 @@ public class SailingReordererPlugin extends Plugin
 
 	private void reset()
 	{
+		if (!isOnPlayerBoat())
+		{
+			sendChatMessage("You can't reset facilities while not on a boat.");
+			return;
+		}
+
+		if (isInShipyard())
+		{
+			sendChatMessage("You can't reset facilities while in the shipyard.");
+			return;
+		}
+
+		resetBoatSlot();
+		sendChatMessage("Sailing panel facilities have been reset.");
+	}
+
+	private void resetBoatSlot()
+	{
+		final var boatSlot = getBoatSlot();
+		if (boatSlot <= 0)
+		{
+			return;
+		}
+
+		final var key = configKey(boatSlot);
+		configManager.unsetConfiguration(SailingReordererConfig.CONFIG_GROUP, key);
 		customRowOrder = null;
 		redrawSidePanel();
 	}
