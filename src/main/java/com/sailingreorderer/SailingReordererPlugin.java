@@ -371,11 +371,6 @@ public class SailingReordererPlugin extends Plugin
 			return;
 		}
 
-		if (rowBaseY == ROW_BASE_Y_EXPANDED)
-		{
-			alignSteerAssignButton(clickLayer.getChildren(), rows.getChildren());
-		}
-
 		final var rowCount = (rows.getOriginalHeight() - rowBaseY) / ROW_HEIGHT;
 
 		if (customRowOrder == null || (reordering && customRowOrder.length != rowCount))
@@ -385,6 +380,11 @@ public class SailingReordererPlugin extends Plugin
 
 		if (customRowOrder.length == rowCount)
 		{
+			if (rowBaseY == ROW_BASE_Y_EXPANDED)
+			{
+				alignSteerAssignButton(clickLayer.getChildren(), rows.getChildren());
+			}
+
 			reorderRows(rows.getChildren());
 			reorderRows(clickLayer.getChildren());
 			setMarker();
