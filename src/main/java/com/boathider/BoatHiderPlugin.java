@@ -3,8 +3,6 @@ package com.boathider;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import net.runelite.api.Client;
 import net.runelite.api.DynamicObject;
@@ -16,10 +14,9 @@ import net.runelite.api.Renderable;
 import net.runelite.api.Scene;
 import net.runelite.api.TileObject;
 import net.runelite.api.WorldEntity;
-import net.runelite.api.events.WorldEntityDespawned;
-import net.runelite.api.events.WorldEntitySpawned;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.ObjectID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
@@ -50,8 +47,6 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 		BoatHiderConfig.CONFIG_KEY_HIDE_OTHER
 	);
 
-	private static final int BOAT_CATEGORY = 2395;
-
 	@Inject
 	private Client client;
 	@Inject
@@ -60,8 +55,6 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 	private BoatHiderConfig config;
 	@Inject
 	private RenderCallbackManager renderCallbackManager;
-
-	private final Map<Integer, WorldEntity> boats = new HashMap<>();
 
 	private boolean showAnchor;
 	private boolean showBallisticAttractor;
@@ -108,10 +101,7 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 	public void shutDown()
 	{
 		renderCallbackManager.unregister(this);
-		clientThread.invokeLater(() -> {
-			invalidateZones();
-			boats.clear();
-		});
+		clientThread.invokeLater(this::invalidateZones);
 	}
 
 	@Subscribe
@@ -158,22 +148,6 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 		{
 			clientThread.invokeLater(this::invalidateZones);
 		}
-	}
-
-	@Subscribe
-	public void onWorldEntitySpawned(final WorldEntitySpawned e)
-	{
-		final var we = e.getWorldEntity();
-		if (we.getConfig().getCategory() == BOAT_CATEGORY)
-		{
-			boats.put(we.getWorldView().getId(), we);
-		}
-	}
-
-	@Subscribe
-	public void onWorldEntityDespawned(final WorldEntityDespawned e)
-	{
-		boats.remove(e.getWorldEntity().getWorldView().getId());
 	}
 
 	@Override
@@ -370,21 +344,22 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 			return;
 		}
 
-		final var boat = boats.get(wv.getId());
-		if (boat == null)
+		final var onBoat = client.getVarbitValue(VarbitID.SAILING_PLAYER_IS_ON_PLAYER_BOAT) == 1;
+		if (!onBoat)
 		{
 			return;
 		}
 
 		final var scene = wv.getScene();
+		final var boatType = client.getVarbitValue(VarbitID.SAILING_BOARDED_BOAT_TYPE);
 
-		switch (boat.getConfig().getId())
+		switch (boatType)
 		{
-			case 1: // raft
-			case 2: // skiff
+			case 0: // raft
+			case 1: // skiff
 				dc.invalidateZone(scene, 0, 0);
 				break;
-			case 3: // sloop
+			case 2: // sloop
 				dc.invalidateZone(scene, 0, 0);
 				dc.invalidateZone(scene, 0, 1);
 				break;
