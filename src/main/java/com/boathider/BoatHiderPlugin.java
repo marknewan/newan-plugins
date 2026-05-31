@@ -63,30 +63,31 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 
 	private final Map<Integer, WorldEntity> boats = new HashMap<>();
 
-	private boolean showSail;
-	private boolean showHull;
-	private boolean showHelm;
-	private boolean showKeel;
-	private boolean showTrim;
-	private boolean showWindGaleCatcher;
+	private boolean showAnchor;
+	private boolean showBallisticAttractor;
+	private boolean showBosunsWorkbench;
+	private boolean showCannon;
+	private boolean showCargoHold;
+	private boolean showChumStation;
 	private boolean showCrystalExtractor;
 	private boolean showCrystalExtractorBar;
-	private boolean showSalvagingStation;
-	private boolean showCargoHold;
-	private boolean showTeleportationFocus;
-	private boolean showInoculationStation;
 	private boolean showEternalBrazier;
-	private boolean showFlag;
-	private boolean showSalvagingHook;
-	private boolean showCannon;
-	private boolean showBallisticAttractor;
-	private boolean showKeg;
-	private boolean showTrawlingNet;
-	private boolean showChumStation;
 	private boolean showFathomStonePearl;
-	private boolean showAnchor;
+	private boolean showFlag;
+	private boolean showHull;
+	private boolean showHelm;
+	private boolean showInoculationStation;
+	private boolean showKeel;
+	private boolean showKeg;
 	private boolean showRange;
-	private boolean showBosunsWorkbench;
+	private boolean showSail;
+	private boolean showSalvagingHook;
+	private boolean showSalvagingStation;
+	private boolean showTeleportationFocus;
+	private boolean showTrawlingNet;
+	private boolean showTrim;
+	private boolean showWindGaleCatcher;
+
 	private boolean showOtherPlayerBoat;
 	private boolean showOther;
 
@@ -124,30 +125,32 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 
 	private void updateConfig(final boolean invalidate)
 	{
-		showSail = !config.hideSail();
-		showHull = !config.hideHull();
-		showHelm = !config.hideHelm();
-		showKeel = !config.hideKeel();
-		showTrim = !config.hideTrim();
-		showWindGaleCatcher = !config.hideWindGaleCatcher();
+
+		showAnchor = !config.hideAnchor();
+		showBallisticAttractor = !config.hideBallisticAttractor();
+		showBosunsWorkbench = !config.hideBosunsWorkbench();
+		showCannon = !config.hideCannon();
+		showCargoHold = !config.hideCargoHold();
+		showChumStation = !config.hideChumStation();
 		showCrystalExtractor = !config.hideCrystalExtractor();
 		showCrystalExtractorBar = !config.hideCrystalExtractorBar();
-		showSalvagingStation = !config.hideSalvagingStation();
-		showCargoHold = !config.hideCargoHold();
-		showTeleportationFocus = !config.hideTeleportationFocus();
-		showInoculationStation = !config.hideInoculationStation();
 		showEternalBrazier = !config.hideEternalBrazier();
-		showFlag = !config.hideFlag();
-		showSalvagingHook = !config.hideSalvagingHook();
-		showCannon = !config.hideCannon();
-		showBallisticAttractor = !config.hideBallisticAttractor();
-		showKeg = !config.hideKeg();
-		showTrawlingNet = !config.hideTrawlingNet();
-		showChumStation = !config.hideChumStation();
 		showFathomStonePearl = !config.hideFathomStonePearl();
-		showAnchor = !config.hideAnchor();
+		showFlag = !config.hideFlag();
+		showHelm = !config.hideHelm();
+		showHull = !config.hideHull();
+		showInoculationStation = !config.hideInoculationStation();
+		showKeel = !config.hideKeel();
+		showKeg = !config.hideKeg();
 		showRange = !config.hideRange();
-		showBosunsWorkbench = !config.hideBosunsWorkbench();
+		showSail = !config.hideSail();
+		showSalvagingHook = !config.hideSalvagingHook();
+		showSalvagingStation = !config.hideSalvagingStation();
+		showTeleportationFocus = !config.hideTeleportationFocus();
+		showTrawlingNet = !config.hideTrawlingNet();
+		showTrim = !config.hideTrim();
+		showWindGaleCatcher = !config.hideWindGaleCatcher();
+
 		showOtherPlayerBoat = !config.hideOtherPlayerBoat();
 		showOther = !config.hideOther();
 
@@ -222,104 +225,14 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 
 			final var id = o.getId();
 
-			if (BoatID.SAIL_IDS.contains(id))
-			{
-				return showSail;
-			}
-
-			if (BoatID.HULL_IDS.contains(id))
-			{
-				return showHull;
-			}
-
-			if (BoatID.HELM_IDS.contains(id))
-			{
-				return showHelm;
-			}
-
-			if (BoatID.KEEL_IDS.contains(id))
-			{
-				return showKeel;
-			}
-
-			if (BoatID.TRIM_IDS.contains(id))
-			{
-				return showTrim;
-			}
-
-			if (BoatID.WIND_CATCHER_IDS.contains(id))
-			{
-				return showWindGaleCatcher;
-			}
-
-			if (BoatID.CRYSTAL_EXTRACTOR_IDS.contains(id))
-			{
-				return showCrystalExtractor;
-			}
-
-			if (BoatID.SALVAGING_STATION_IDS.contains(id))
-			{
-				return showSalvagingStation;
-			}
-
-			if (BoatID.CARGO_HOLD_IDS.contains(id))
-			{
-				return showCargoHold;
-			}
-
-			if (BoatID.TELEPORTATION_FOCUS_IDS.contains(id))
-			{
-				return showTeleportationFocus;
-			}
-
-			if (BoatID.INOCULATION_STATION_IDS.contains(id))
-			{
-				return showInoculationStation;
-			}
-
-			if (BoatID.ETERNAL_BRAZIER_IDS.contains(id))
-			{
-				return showEternalBrazier;
-			}
-
-			if (BoatID.FLAG_IDS.contains(id))
-			{
-				return showFlag;
-			}
-
-			if (BoatID.SALVAGING_HOOK_IDS.contains(id))
-			{
-				return showSalvagingHook;
-			}
-
-			if (BoatID.CANNON_IDS.contains(id))
-			{
-				return showCannon;
-			}
-
-			if (BoatID.KEG_IDS.contains(id))
-			{
-				return showKeg;
-			}
-
-			if (BoatID.TRAWLING_NET_IDS.contains(id))
-			{
-				return showTrawlingNet;
-			}
-
-			if (BoatID.CHUM_STATION_IDS.contains(id))
-			{
-				return showChumStation;
-			}
-
-			if (BoatID.FATHOM_STONE_PEARL_IDS.contains(id))
-			{
-				return showFathomStonePearl;
-			}
-
 			if (BoatID.ANCHOR_IDS.contains(id))
 			{
 				return showAnchor;
+			}
+
+			if (id == ObjectID.SAILING_BALLISTIC_ATTRACTOR)
+			{
+				return showBallisticAttractor;
 			}
 
 			if (BoatID.BOSUNS_WORKBENCH_IDS.contains(id))
@@ -327,14 +240,104 @@ public class BoatHiderPlugin extends Plugin implements RenderCallback
 				return showBosunsWorkbench;
 			}
 
+			if (BoatID.CANNON_IDS.contains(id))
+			{
+				return showCannon;
+			}
+
+			if (BoatID.CRYSTAL_EXTRACTOR_IDS.contains(id))
+			{
+				return showCrystalExtractor;
+			}
+
+			if (BoatID.ETERNAL_BRAZIER_IDS.contains(id))
+			{
+				return showEternalBrazier;
+			}
+
+			if (BoatID.FATHOM_STONE_PEARL_IDS.contains(id))
+			{
+				return showFathomStonePearl;
+			}
+
+			if (BoatID.FLAG_IDS.contains(id))
+			{
+				return showFlag;
+			}
+
+			if (BoatID.HELM_IDS.contains(id))
+			{
+				return showHelm;
+			}
+
+			if (BoatID.SAIL_IDS.contains(id))
+			{
+				return showSail;
+			}
+
+			if (BoatID.SALVAGING_HOOK_IDS.contains(id))
+			{
+				return showSalvagingHook;
+			}
+
+			if (BoatID.TELEPORTATION_FOCUS_IDS.contains(id))
+			{
+				return showTeleportationFocus;
+			}
+
+			if (BoatID.TRAWLING_NET_IDS.contains(id))
+			{
+				return showTrawlingNet;
+			}
+
+			if (BoatID.WIND_CATCHER_IDS.contains(id))
+			{
+				return showWindGaleCatcher;
+			}
+
+			if (BoatID.CARGO_HOLD_IDS.contains(id))
+			{
+				return showCargoHold;
+			}
+
+			if (BoatID.CHUM_STATION_IDS.contains(id))
+			{
+				return showChumStation;
+			}
+
+			if (BoatID.HULL_IDS.contains(id))
+			{
+				return showHull;
+			}
+
+			if (BoatID.INOCULATION_STATION_IDS.contains(id))
+			{
+				return showInoculationStation;
+			}
+
+			if (BoatID.KEEL_IDS.contains(id))
+			{
+				return showKeel;
+			}
+
+			if (BoatID.KEG_IDS.contains(id))
+			{
+				return showKeg;
+			}
+
 			if (id == ObjectID.SAILING_FACILITY_RANGE)
 			{
 				return showRange;
 			}
 
-			if (id == ObjectID.SAILING_BALLISTIC_ATTRACTOR)
+			if (BoatID.SALVAGING_STATION_IDS.contains(id))
 			{
-				return showBallisticAttractor;
+				return showSalvagingStation;
+			}
+
+			if (BoatID.TRIM_IDS.contains(id))
+			{
+				return showTrim;
 			}
 
 			if (renderable instanceof DynamicObject || renderable instanceof Model)

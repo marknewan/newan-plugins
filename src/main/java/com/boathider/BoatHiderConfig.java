@@ -27,38 +27,85 @@ public interface BoatHiderConfig extends Config
 
 	// General
 
+	String CONFIG_KEY_HIDE_CARGO_HOLD = "hideCargoHold";
+	String CONFIG_KEY_HIDE_CHUM_STATION = "hideChumStation";
+	String CONFIG_KEY_HIDE_HULL = "hideHull";
+	String CONFIG_KEY_HIDE_INOCULATION_STATION = "hideInoculationStation";
+	String CONFIG_KEY_HIDE_KEEL = "hideKeel";
+	String CONFIG_KEY_HIDE_KEG = "hideKeg";
+	String CONFIG_KEY_HIDE_OTHER = "hideOther";
+	String CONFIG_KEY_HIDE_RANGE = "hideRange";
+	String CONFIG_KEY_HIDE_SALVAGING_STATION = "hideSalvagingStation";
+	String CONFIG_KEY_HIDE_TRIM = "hideTrim";
+
 	@ConfigItem(
-		name = "Hide Sail",
+		name = "Hide Anchor",
 		description = "",
-		keyName = "hideSail",
+		keyName = "hideAnchor",
 		position = 0,
 		section = SECTION_GENERAL
 	)
-	default boolean hideSail()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		name = "Hide Helm",
-		description = "",
-		keyName = "hideHelm",
-		position = 1,
-		section = SECTION_GENERAL
-	)
-	default boolean hideHelm()
+	default boolean hideAnchor()
 	{
 		return false;
 	}
 
 	@ConfigItem(
-		name = "Hide Wind/Gale Catcher",
+		name = "Hide Ballistic Attractor",
 		description = "",
-		keyName = "hideWindGaleCatcher",
+		keyName = "hideBallisticAttractor",
+		position = 1,
+		section = SECTION_GENERAL
+	)
+	default boolean hideBallisticAttractor()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Bosun's Workbench",
+		description = "",
+		keyName = "hideBosunsWorkbench",
 		position = 2,
 		section = SECTION_GENERAL
 	)
-	default boolean hideWindGaleCatcher()
+	default boolean hideBosunsWorkbench()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Cannon",
+		description = "",
+		keyName = "hideCannon",
+		position = 3,
+		section = SECTION_GENERAL
+	)
+	default boolean hideCannon()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Cargo Hold",
+		description = "",
+		keyName = CONFIG_KEY_HIDE_CARGO_HOLD,
+		position = 4,
+		section = SECTION_GENERAL
+	)
+	default boolean hideCargoHold()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Chum Station",
+		description = "",
+		keyName = CONFIG_KEY_HIDE_CHUM_STATION,
+		position = 5,
+		section = SECTION_GENERAL
+	)
+	default boolean hideChumStation()
 	{
 		return false;
 	}
@@ -67,7 +114,7 @@ public interface BoatHiderConfig extends Config
 		name = "Hide Crystal Extractor",
 		description = "",
 		keyName = "hideCrystalExtractor",
-		position = 3,
+		position = 6,
 		section = SECTION_GENERAL
 	)
 	default boolean hideCrystalExtractor()
@@ -79,7 +126,7 @@ public interface BoatHiderConfig extends Config
 		name = "Hide Crystal Extractor Bar",
 		description = "",
 		keyName = "hideCrystalExtractorBar",
-		position = 4,
+		position = 7,
 		section = SECTION_GENERAL
 	)
 	default boolean hideCrystalExtractorBar()
@@ -88,22 +135,10 @@ public interface BoatHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Hide Teleporation Focus",
-		description = "",
-		keyName = "hideTeleportationFocus",
-		position = 5,
-		section = SECTION_GENERAL
-	)
-	default boolean hideTeleportationFocus()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		name = "Hide Eternal Brazier",
 		description = "",
 		keyName = "hideEternalBrazier",
-		position = 6,
+		position = 8,
 		section = SECTION_GENERAL
 	)
 	default boolean hideEternalBrazier()
@@ -112,70 +147,10 @@ public interface BoatHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Hide Flag",
-		description = "",
-		keyName = "hideFlag",
-		position = 7,
-		section = SECTION_GENERAL
-	)
-	default boolean hideFlag()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		name = "Hide Salvaging Hook",
-		description = "",
-		keyName = "hideSalvagingHook",
-		position = 8,
-		section = SECTION_GENERAL
-	)
-	default boolean hideSalvagingHook()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		name = "Hide Cannon",
-		description = "",
-		keyName = "hideCannon",
-		position = 9,
-		section = SECTION_GENERAL
-	)
-	default boolean hideCannon()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		name = "Hide Ballistic Attractor",
-		description = "",
-		keyName = "hideBallisticAttractor",
-		position = 10,
-		section = SECTION_GENERAL
-	)
-	default boolean hideBallisticAttractor()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		name = "Hide Trawling Net",
-		description = "",
-		keyName = "hideTrawlingNet",
-		position = 11,
-		section = SECTION_GENERAL
-	)
-	default boolean hideTrawlingNet()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		name = "Hide Fathom Stone/Pearl",
 		description = "",
 		keyName = "hideFathomStonePearl",
-		position = 12,
+		position = 9,
 		section = SECTION_GENERAL
 	)
 	default boolean hideFathomStonePearl()
@@ -184,36 +159,34 @@ public interface BoatHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		name = "Hide Anchor",
+		name = "Hide Flag",
 		description = "",
-		keyName = "hideAnchor",
-		position = 13,
+		keyName = "hideFlag",
+		position = 10,
 		section = SECTION_GENERAL
 	)
-	default boolean hideAnchor()
+	default boolean hideFlag()
 	{
 		return false;
 	}
 
 	@ConfigItem(
-		name = "Hide Bosun's Workbench",
+		name = "Hide Helm",
 		description = "",
-		keyName = "hideBosunsWorkbench",
-		position = 14,
+		keyName = "hideHelm",
+		position = 11,
 		section = SECTION_GENERAL
 	)
-	default boolean hideBosunsWorkbench()
+	default boolean hideHelm()
 	{
 		return false;
 	}
-
-	String CONFIG_KEY_HIDE_HULL = "hideHull";
 
 	@ConfigItem(
 		name = "Hide Hull",
 		description = "",
 		keyName = CONFIG_KEY_HIDE_HULL,
-		position = 15,
+		position = 12,
 		section = SECTION_GENERAL
 	)
 	default boolean hideHull()
@@ -221,69 +194,11 @@ public interface BoatHiderConfig extends Config
 		return false;
 	}
 
-	String CONFIG_KEY_HIDE_KEEL = "hideKeel";
-
-	@ConfigItem(
-		name = "Hide Keel",
-		description = "",
-		keyName = CONFIG_KEY_HIDE_KEEL,
-		position = 16,
-		section = SECTION_GENERAL
-	)
-	default boolean hideKeel()
-	{
-		return false;
-	}
-
-	String CONFIG_KEY_HIDE_TRIM = "hideTrim";
-
-	@ConfigItem(
-		name = "Hide Trim",
-		description = "",
-		keyName = CONFIG_KEY_HIDE_TRIM,
-		position = 17,
-		section = SECTION_GENERAL
-	)
-	default boolean hideTrim()
-	{
-		return false;
-	}
-
-	String CONFIG_KEY_HIDE_SALVAGING_STATION = "hideSalvagingStation";
-
-	@ConfigItem(
-		name = "Hide Salvaging Station",
-		description = "",
-		keyName = CONFIG_KEY_HIDE_SALVAGING_STATION,
-		position = 18,
-		section = SECTION_GENERAL
-	)
-	default boolean hideSalvagingStation()
-	{
-		return false;
-	}
-
-	String CONFIG_KEY_HIDE_CARGO_HOLD = "hideCargoHold";
-
-	@ConfigItem(
-		name = "Hide Cargo Hold",
-		description = "",
-		keyName = CONFIG_KEY_HIDE_CARGO_HOLD,
-		position = 19,
-		section = SECTION_GENERAL
-	)
-	default boolean hideCargoHold()
-	{
-		return false;
-	}
-
-	String CONFIG_KEY_HIDE_INOCULATION_STATION = "hideInoculationStation";
-
 	@ConfigItem(
 		name = "Hide Inoculation Station",
 		description = "",
 		keyName = CONFIG_KEY_HIDE_INOCULATION_STATION,
-		position = 20,
+		position = 13,
 		section = SECTION_GENERAL
 	)
 	default boolean hideInoculationStation()
@@ -291,13 +206,23 @@ public interface BoatHiderConfig extends Config
 		return false;
 	}
 
-	String CONFIG_KEY_HIDE_KEG = "hideKeg";
+	@ConfigItem(
+		name = "Hide Keel",
+		description = "",
+		keyName = CONFIG_KEY_HIDE_KEEL,
+		position = 14,
+		section = SECTION_GENERAL
+	)
+	default boolean hideKeel()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		name = "Hide Keg",
 		description = "",
 		keyName = CONFIG_KEY_HIDE_KEG,
-		position = 21,
+		position = 15,
 		section = SECTION_GENERAL
 	)
 	default boolean hideKeg()
@@ -305,30 +230,98 @@ public interface BoatHiderConfig extends Config
 		return false;
 	}
 
-	String CONFIG_KEY_HIDE_CHUM_STATION = "hideChumStation";
-
-	@ConfigItem(
-		name = "Hide Chum Station",
-		description = "",
-		keyName = CONFIG_KEY_HIDE_CHUM_STATION,
-		position = 22,
-		section = SECTION_GENERAL
-	)
-	default boolean hideChumStation()
-	{
-		return false;
-	}
-
-	String CONFIG_KEY_HIDE_RANGE = "hideRange";
-
 	@ConfigItem(
 		name = "Hide Range",
 		description = "",
 		keyName = CONFIG_KEY_HIDE_RANGE,
-		position = 23,
+		position = 16,
 		section = SECTION_GENERAL
 	)
 	default boolean hideRange()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Sail",
+		description = "",
+		keyName = "hideSail",
+		position = 17,
+		section = SECTION_GENERAL
+	)
+	default boolean hideSail()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		name = "Hide Salvaging Hook",
+		description = "",
+		keyName = "hideSalvagingHook",
+		position = 18,
+		section = SECTION_GENERAL
+	)
+	default boolean hideSalvagingHook()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Salvaging Station",
+		description = "",
+		keyName = CONFIG_KEY_HIDE_SALVAGING_STATION,
+		position = 19,
+		section = SECTION_GENERAL
+	)
+	default boolean hideSalvagingStation()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Teleporation Focus",
+		description = "",
+		keyName = "hideTeleportationFocus",
+		position = 20,
+		section = SECTION_GENERAL
+	)
+	default boolean hideTeleportationFocus()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Trawling Net",
+		description = "",
+		keyName = "hideTrawlingNet",
+		position = 21,
+		section = SECTION_GENERAL
+	)
+	default boolean hideTrawlingNet()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Trim",
+		description = "",
+		keyName = CONFIG_KEY_HIDE_TRIM,
+		position = 22,
+		section = SECTION_GENERAL
+	)
+	default boolean hideTrim()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		name = "Hide Wind/Gale Catcher",
+		description = "",
+		keyName = "hideWindGaleCatcher",
+		position = 23,
+		section = SECTION_GENERAL
+	)
+	default boolean hideWindGaleCatcher()
 	{
 		return false;
 	}
@@ -346,8 +339,6 @@ public interface BoatHiderConfig extends Config
 	{
 		return false;
 	}
-
-	String CONFIG_KEY_HIDE_OTHER = "hideOther";
 
 	@ConfigItem(
 		name = "Hide Other",
