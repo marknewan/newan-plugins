@@ -146,14 +146,15 @@ public interface DemonicLarvaTrackerConfig extends Config
 
 	@ConfigItem(
 		name = "Remove Spawn Animation",
-		description = "Remove the spawn animation from larvas.",
+		description = "Remove the spawn animation from larvas." +
+			"<br>Note: Larva are not attackable for a few ticks on spawn.",
 		position = 5,
 		keyName = "removeSpawnAnimation",
 		section = SECTION_GENERAL
 	)
 	default boolean removeSpawnAnimation()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
